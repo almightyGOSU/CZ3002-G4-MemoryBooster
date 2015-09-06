@@ -34,6 +34,7 @@ public class MainFragment extends FragmentActivity {
 
     private final String PENDING_ACTION_BUNDLE_KEY =
             "cz3002.g4.memoryBooster:PendingAction";
+    private static final String LINE_SEP = System.getProperty("line.separator");
 
     private ProfilePictureView _profilePictureView;
     private TextView _profileName;
@@ -142,19 +143,31 @@ public class MainFragment extends FragmentActivity {
 			public void onCompleted(GraphResponse response) {
 				
 				Log.d("GetFriends", "Completed! " + response.getRawResponse());
+				Toast.makeText(getApplicationContext(),
+						"Completed! " + response.getRawResponse(),
+						Toast.LENGTH_LONG).show();
 				
 				try {
 					JSONArray rawData = response.getJSONObject().getJSONArray(
 							"data");
+					
+					StringBuilder sb = new StringBuilder();
 					for (int i = 0; i < rawData.length(); i++) {
 
 						try {
 							JSONObject jsonObject = rawData.getJSONObject(i);
+							sb.append(jsonObject.toString()).append(LINE_SEP);
 							Log.d("GetFriends", jsonObject.toString());
 
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
+					}
+					
+					if(sb.length() > 0) {
+						Toast.makeText(getApplicationContext(),
+								"JSON Data: " + sb.toString(),
+								Toast.LENGTH_LONG).show();
 					}
 
 					// Get next batch of results if it exists
