@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    
+    <!-- Facebook built-in strings -->
+    <string name="app_name">Memory Booster</string>
+    <string name="facebook_app_name">Memory Booster</string>
+    <string name="app_id">1629232117365386</string>
+    
+    <string name="fb_cancelled">Cancelled</string>
+    <string name="fb_ok">OK</string>
+    
+    <string name="fb_permission_not_granted">Unable to perform selected action 
+        because permissions were not granted.</string>
+    <!-- Facebook built-in strings -->
+    
+    <!-- Application strings -->
+    <string name="guest">Guest</string>
+    <string name="fb_getFriends">Get Facebook Friends</string>
+    <!-- Application strings -->
+    
+</resources>
