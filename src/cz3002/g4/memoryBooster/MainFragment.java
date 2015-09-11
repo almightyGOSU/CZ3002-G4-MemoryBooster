@@ -1,7 +1,11 @@
 package cz3002.g4.memoryBooster;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.json.JSONArray;
@@ -9,18 +13,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +38,9 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
+
+import cz3002.g4.util.BitmapUtil;
+import cz3002.g4.util.FacebookDataSource;
 
 public class MainFragment extends FragmentActivity {
 
@@ -39,11 +51,22 @@ public class MainFragment extends FragmentActivity {
     private ProfilePictureView _profilePictureView;
     private TextView _profileName;
     private LoginButton _btn_fbLogin;
-    private Button _btn_testGetFriends;
+    
+    // For testing facebook friends
+    private ImageView _iv_friendProfilePicture;
+    private TextView _tv_friendProfileName;
+    private Button _btn_getNextFriend;
+    private ArrayList<String> _friendsProfIDList = null;
+    private ArrayList<String> _friendsProfNameList = null;
+    private int _currFbFriend = 0;
+    private ProgressDialog _pd_FbFriends = null;
+    
+    // FacebookDataSource
+    private FacebookDataSource _fbDataSrc = null;
     
     private PendingAction pendingAction = PendingAction.NONE;
-    private CallbackManager callbackManager;
-    private ProfileTracker profileTracker;
+    private CallbackManager _callbackManager;
+    private ProfileTracker _profileTracker;
     
     private Bundle _params = null;
 
@@ -55,144 +78,59 @@ public class MainFragment extends FragmentActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	
         super.onCreate(savedInstanceState);
         
         FacebookSdk.sdkInitialize(this.getApplicationContext());
+        setContentView(R.layout.main_frag);
         
-		// Get key hash
+		// Get key hash for Facebook development
         getKeyHash();
-
-        callbackManager = CallbackManager.Factory.create();
-
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        handlePendingAction();
-                        updateUI();
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        if (pendingAction != PendingAction.NONE) {
-                            showAlert();
-                            pendingAction = PendingAction.NONE;
-                        }
-                        updateUI();
-                    }
-
-                    @Override
-                    public void onError(FacebookException exception) {
-                        if (pendingAction != PendingAction.NONE
-                                && exception instanceof FacebookAuthorizationException) {
-                            showAlert();
-                            pendingAction = PendingAction.NONE;
-                        }
-                        updateUI();
-                    }
-
-                    private void showAlert() {
-                        new AlertDialog.Builder(MainFragment.this)
-                                .setTitle(R.string.fb_cancelled)
-                                .setMessage(R.string.fb_permission_not_granted)
-                                .setPositiveButton(R.string.fb_ok, null)
-                                .show();
-                    }
-                });
 
         if (savedInstanceState != null) {
             String name = savedInstanceState.getString(PENDING_ACTION_BUNDLE_KEY);
             pendingAction = PendingAction.valueOf(name);
         }
-
-        setContentView(R.layout.main_frag);
+        
+        // Initialize Facebook SDK and its related components
+        initFacebook();
         
         // Get UI elements
         _profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
         _profileName = (TextView) findViewById(R.id.profileName);
         _btn_fbLogin = (LoginButton) findViewById(R.id.btn_fbLogin);
-        _btn_testGetFriends = (Button) findViewById(R.id.btn_testGetFriends);
+        
+        _iv_friendProfilePicture = (ImageView) findViewById(R.id.iv_friendProfilePicture);
+        _tv_friendProfileName = (TextView) findViewById(R.id.tv_friendProfileName);
+        _btn_getNextFriend = (Button) findViewById(R.id.btn_getNextFriend);
         
         // Resize Facebook login/logout button
         resizeFbLoginBtn();
         
         // Set Facebook login permissions
         _btn_fbLogin.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
-
-        // For Facebook profile
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                updateUI();
-                // It's possible that we were waiting for Profile to be populated in order to
-                // post a status update.
-                handlePendingAction();
-            }
-        };
-        
-        // For testing Facebook get friends
-        _params = new Bundle();
-        _params.putString("fields", "id,picture");
-        _params.putInt("limit", 5);
-        
-		// For testing Facebook get friends
-		// Setup a general callback for each graph request sent, this callback
-		// will launch the next request if it exists
-		final GraphRequest.Callback graphCallback = new GraphRequest.Callback() {
-			@Override
-			public void onCompleted(GraphResponse response) {
-				
-				Log.d("GetFriends", "Completed! " + response.getRawResponse());
-				Toast.makeText(getApplicationContext(),
-						"Completed! " + response.getRawResponse(),
-						Toast.LENGTH_LONG).show();
-				
-				try {
-					JSONArray rawData = response.getJSONObject().getJSONArray(
-							"data");
-					
-					StringBuilder sb = new StringBuilder();
-					for (int i = 0; i < rawData.length(); i++) {
-
-						try {
-							JSONObject jsonObject = rawData.getJSONObject(i);
-							sb.append(jsonObject.toString()).append(LINE_SEP);
-							Log.d("GetFriends", jsonObject.toString());
-
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-					}
-					
-					if(sb.length() > 0) {
-						Toast.makeText(getApplicationContext(),
-								"JSON Data: " + sb.toString(),
-								Toast.LENGTH_LONG).show();
-					}
-
-					// Get next batch of results if it exists
-					GraphRequest nextRequest = response
-							.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT);
-					if (nextRequest != null) {
-						nextRequest.setCallback(this);
-						nextRequest.executeAsync();
-					}
-
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-		};
-        
-		// For testing Facebook get friends
-		_btn_testGetFriends.setOnClickListener(new View.OnClickListener() {
+		
+		// For getting next Facebook friend in the list
+		_btn_getNextFriend.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
-				// Send first request, the rest should be called by the callback
-				new GraphRequest(AccessToken.getCurrentAccessToken(), 
-				        "me/friends", _params, HttpMethod.GET, graphCallback).executeAsync();
+				if(_friendsProfIDList.isEmpty() || _friendsProfNameList.isEmpty())
+					return;
+				
+				_fbDataSrc.open();
+				
+				Bitmap bm = _fbDataSrc.getProfilePic(
+						_friendsProfIDList.get(_currFbFriend));
+				_iv_friendProfilePicture.setImageBitmap(bm);
+				_tv_friendProfileName.setText(_friendsProfNameList.get(_currFbFriend));
+				_currFbFriend = ((_currFbFriend + 1) % _friendsProfIDList.size());
+				
+				_fbDataSrc.close();
 			}
 		});
+        
+        _fbDataSrc = new FacebookDataSource(getApplicationContext());
+        updateFbFriendsList();
     }
 
     @Override
@@ -212,7 +150,7 @@ public class MainFragment extends FragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        _callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -224,7 +162,7 @@ public class MainFragment extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        profileTracker.stopTracking();
+        _profileTracker.stopTracking();
     }
 
     private void updateUI() {
@@ -256,7 +194,7 @@ public class MainFragment extends FragmentActivity {
         }
     }
 
-    private void getKeyHash() {
+	private void getKeyHash() {
 		// Add code to print out the key hash
 		try {
 			PackageInfo info = getPackageManager().getPackageInfo(
@@ -272,6 +210,62 @@ public class MainFragment extends FragmentActivity {
 		} catch (NoSuchAlgorithmException e) {
 
 		}
+    }
+    
+    /** Initialize Facebook SDK and its related components */
+    private void initFacebook() {
+    	
+    	_callbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(_callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        handlePendingAction();
+                        updateUI();
+                        
+                        // Login success, update Facebook friends list
+                        updateFbFriendsList();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        if (pendingAction != PendingAction.NONE) {
+                            showAlert();
+                            pendingAction = PendingAction.NONE;
+                        }
+                        updateUI();
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        if (pendingAction != PendingAction.NONE
+                                && exception instanceof FacebookAuthorizationException) {
+                            showAlert();
+                            pendingAction = PendingAction.NONE;
+                        }
+                        updateUI();
+                    }
+
+                    private void showAlert() {
+                        new AlertDialog.Builder(MainFragment.this)
+                                .setTitle(R.string.fb_cancelled)
+                                .setMessage(R.string.fb_permission_not_granted)
+                                .setPositiveButton(R.string.fb_ok, null)
+                                .show();
+                    }
+                });
+        
+        // For Facebook profile
+        _profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                updateUI();
+                // It's possible that we were waiting for Profile to be populated in order to
+                // post a status update
+                handlePendingAction();
+            }
+        };
     }
     
     /** Resize Facebook login/logout button */
@@ -293,57 +287,158 @@ public class MainFragment extends FragmentActivity {
 		_btn_fbLogin.setTextSize(20);
     }
     
-	/** Old code that does not work somehow.. */
-	@SuppressWarnings("unused")
-	private void testGetFriends() {
+    private GraphRequest.Callback setFbGraphCallback() {
+        
+    	return new GraphRequest.Callback() {
+			@Override
+			public void onCompleted(GraphResponse response) {
+				
+				try {
+					JSONArray rawData = response.getJSONObject().getJSONArray(
+							"data");
+					
+					for (int i = 0; i < rawData.length(); i++) {
 
-		Bundle param = new Bundle();
-		param.putString("fields", "id,picture");
-		param.putInt("limit", 5);
+						JSONObject jsonObject = rawData.getJSONObject(i);
 
-		new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/friends",
-				param, HttpMethod.GET, new GraphRequest.Callback() {
-					public void onCompleted(GraphResponse response) {
+						String friendID = jsonObject.getString("id");
+						String friendName = jsonObject.getString("name");
 
-						/* Handle the result */
-						Log.d("TestGetFriends", "Completed! " + response.getRawResponse());
-						
-						JSONObject respJsonObject = response.getJSONObject();
-						JSONArray jsonArray = null;
-						try {
-							jsonArray = respJsonObject.getJSONArray("data");
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-
-						if (jsonArray == null) {
-							Toast.makeText(getApplicationContext(),
-									"Response JSONArray is null!",
-									Toast.LENGTH_LONG).show();
-							Log.e("TestGetFriends", "Response JSONArray is null!");
-							return;
-						} else {
-							Toast.makeText(getApplicationContext(),
-									"Response data JSONArray is good!!",
-									Toast.LENGTH_LONG).show();
-						}
-
-						int jsonArrayLen = jsonArray.length();
-						for (int i = 0; i < jsonArrayLen; i++) {
-
-							try {
-								JSONObject jsonObject = jsonArray
-										.getJSONObject(i);
-
-								Log.d("TestGetFriends", jsonObject.toString());
-
-							} catch (JSONException e) {
-								e.printStackTrace();
-							}
-						}
-
+						_friendsProfIDList.add(friendID);
+						_friendsProfNameList.add(friendName);
 					}
+
+					// Get next batch of results if it exists
+					GraphRequest nextRequest = response
+							.getRequestForPagedResults(
+									GraphResponse.PagingDirection.NEXT);
+					
+					if (nextRequest != null) {
+						nextRequest.setParameters(_params);
+						nextRequest.setCallback(this);
+						nextRequest.executeAsync();
+					}
+					else {
+						
+						String [][] params = 
+								new String[_friendsProfIDList.size()][2];
+						
+						Log.d("GetFriends", "Params length: " + params.length);
+						for(int i = 0; i < params.length; i++) {
+							
+							params[i] = new String[2];
+							params[i][0] = _friendsProfIDList.get(i);
+							params[i][1] = _friendsProfNameList.get(i);
+						}
+						
+						// Start async task to update profile
+						// information of Facebook friends
+						new UpdateFbFriendsTask().execute(params);
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
-		).executeAsync();
+			}
+		};
+    }
+    
+    private void updateFbFriendsList() {
+    	
+    	boolean bHasAccessToken = AccessToken.getCurrentAccessToken() != null;
+        boolean bLoggedIn = Profile.getCurrentProfile() != null;
+        
+        if(!bHasAccessToken || !bLoggedIn)
+        	return;
+        
+        Log.d("updateFbFriendsList", "I AM HERE!");
+        
+        // Initialize list to store profile ID and name of facebook friends
+        _friendsProfIDList = new ArrayList<String>();
+        _friendsProfNameList = new ArrayList<String>();
+        
+        // Send first request, the rest should be called by the callback
+        _params = new Bundle();
+        _params.putString("fields", "id,name");
+        _params.putInt("limit", 30);
+        final GraphRequest.Callback _graphCallback = setFbGraphCallback();
+		new GraphRequest(AccessToken.getCurrentAccessToken(), 
+		        "me/friends", _params, HttpMethod.GET, _graphCallback).executeAsync();
+		
+		// Show dialog
+		_pd_FbFriends = new ProgressDialog(MainFragment.this);
+		_pd_FbFriends.setTitle(R.string.fb_friends);
+		_pd_FbFriends.setMessage("Retriving Facebook Friends List..");
+		_pd_FbFriends.setCancelable(false);
+		_pd_FbFriends.setCanceledOnTouchOutside(false);
+		_pd_FbFriends.show();
+    }
+    
+    private class UpdateFbFriendsTask extends AsyncTask<String [], Void, String> {
+		
+		protected void onPreExecute() {
+			
+			Log.d("UpdateFbFriendsTask", "I am here in onPreExecute!");
+			
+			_pd_FbFriends.setTitle(R.string.fb_friends);
+			_pd_FbFriends.setMessage("Updating Facebook Friends Information..");
+		}
+		
+		// Get Facebook friends information, store to database
+		protected String doInBackground(String[] ... params) {
+			
+			Log.d("UpdateFbFriendsTask", "I am here in doInBackground!");
+			
+			// Open connection to database
+			_fbDataSrc.open();
+			
+			// Get all existing profile IDs
+			ArrayList<String> existingProfIDs = _fbDataSrc.getAllProfileID();
+			
+			for(String [] userInfo : params) {
+				
+				if(existingProfIDs.contains(userInfo[0]))
+					continue;
+				
+				Log.d("UpdateFbFriendsTask", userInfo[0] + ", " + userInfo[1]);
+				
+				Bitmap bm = getFacebookProfilePicture(userInfo[0]);
+				if(bm != null) {
+					_fbDataSrc.insertFbFriend(userInfo[0], userInfo[1],
+							BitmapUtil.getBytes(bm));
+				}
+			}
+			
+			// Close connection to database
+			_fbDataSrc.close();
+			
+			return "Success";
+		}
+
+		protected void onPostExecute(String result) {
+			
+			Log.d("UpdateFbFriendsTask", "I am here in onPostExecute!");
+			
+			_pd_FbFriends.dismiss();
+			return;
+		}
+	}
+    
+	public static Bitmap getFacebookProfilePicture(String userID) {
+		
+		URL imageURL = null;
+		Bitmap bitmap = null; 
+		try {
+			imageURL = new URL("https://graph.facebook.com/" + userID
+					+ "/picture?width=240&height=240");
+			bitmap = BitmapFactory.decodeStream(
+					imageURL.openConnection().getInputStream());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return bitmap;
 	}
 }

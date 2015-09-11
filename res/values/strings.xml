@@ -17,6 +17,9 @@
     <!-- Application strings -->
     <string name="guest">Guest</string>
     <string name="fb_getFriends">Get Facebook Friends</string>
+    <string name="fb_testGetFriends">Find out who is using this application!</string>
+    <string name="fb_getNextFriend">Get Next Friend</string>
+    <string name="fb_friends">Facebook Friends</string>
     <!-- Application strings -->
     
 </resources>

@@ -45,28 +45,39 @@
         android:layout_marginTop="5dp"
         facebook:com_facebook_confirm_logout="true"
         facebook:com_facebook_tooltip_mode="never_display" />
-
-    <Button
-        android:id="@+id/btn_testGetFriends"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/btn_fbLogin"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:padding="20dp"
-        android:text="@string/fb_getFriends"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+    
+    <ImageView
+            android:id="@+id/iv_friendProfilePicture"
+            android:contentDescription="@string/guest"
+            android:src="@drawable/mind_games"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:layout_marginTop="80dp"
+            android:layout_below="@id/btn_fbLogin"
+            android:layout_centerHorizontal="true" />
     
     <TextView
+            android:id="@+id/tv_friendProfileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="5dp"
-            android:layout_below="@id/btn_testGetFriends"
-            android:layout_centerHorizontal="true"
-            android:textSize="16sp"
-            android:text="'Get Facebook Friends' does not work yet!" />
+            android:layout_below="@id/iv_friendProfilePicture"
+        	android:layout_centerHorizontal="true"
+        	android:layout_gravity="center_horizontal"
+        	android:layout_marginTop="5dp"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:text="@string/guest" />
+    
+    <Button
+        android:id="@+id/btn_getNextFriend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_friendProfileName"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:padding="20dp"
+        android:text="@string/fb_getNextFriend"
+        android:textSize="22sp" />
 
 </RelativeLayout>
