@@ -16,10 +16,15 @@
     
     <!-- Application strings -->
     <string name="guest">Guest</string>
-    <string name="fb_getFriends">Get Facebook Friends</string>
-    <string name="fb_testGetFriends">Find out who is using this application!</string>
-    <string name="fb_getNextFriend">Get Next Friend</string>
-    <string name="fb_friends">Facebook Friends</string>
+    
+    <string name="view_tutorial">View Tutorial</string>
+    <string name="play_game">Play Game</string>
+    <string name="view_highscores">View Highscores</string>
+    <string name="settings">Settings</string>
     <!-- Application strings -->
+    
+    <!-- Dialog strings -->
+    <string name="fb_friends">Facebook Friends</string>
+    <!-- Dialog strings -->
     
 </resources>

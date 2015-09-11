@@ -29,9 +29,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.*;
 import com.facebook.login.LoginManager;
@@ -46,29 +44,39 @@ public class MainFragment extends FragmentActivity {
 
     private final String PENDING_ACTION_BUNDLE_KEY =
             "cz3002.g4.memoryBooster:PendingAction";
-    private static final String LINE_SEP = System.getProperty("line.separator");
 
-    private ProfilePictureView _profilePictureView;
-    private TextView _profileName;
-    private LoginButton _btn_fbLogin;
+    // For displaying current user information
+    private ProfilePictureView _profilePictureView = null;
+    private TextView _profileName = null;
+    private LoginButton _btn_fbLogin = null;
     
-    // For testing facebook friends
-    private ImageView _iv_friendProfilePicture;
-    private TextView _tv_friendProfileName;
-    private Button _btn_getNextFriend;
+    // For getting Facebook data
     private ArrayList<String> _friendsProfIDList = null;
     private ArrayList<String> _friendsProfNameList = null;
-    private int _currFbFriend = 0;
     private ProgressDialog _pd_FbFriends = null;
     
     // FacebookDataSource
     private FacebookDataSource _fbDataSrc = null;
     
+    // Facebook components
     private PendingAction pendingAction = PendingAction.NONE;
-    private CallbackManager _callbackManager;
-    private ProfileTracker _profileTracker;
+    private CallbackManager _callbackManager = null;
+    private ProfileTracker _profileTracker = null;
     
+    // For getting Facebook data
     private Bundle _params = null;
+    
+    // Main menu buttons
+    private Button _btn_viewTutorial = null;
+    private Button _btn_playGame = null;
+    private Button _btn_viewHighscores = null;
+    private Button _btn_settings = null;
+    
+    // Play game
+    public static final String USER_STATUS = "USER_STATUS";
+    public static final String GUEST_USER = "GUEST";
+    public static final String FB_USER = "FACEBOOK";
+    private static String _userStatus = GUEST_USER;
 
     private enum PendingAction {
         NONE,
@@ -96,38 +104,10 @@ public class MainFragment extends FragmentActivity {
         initFacebook();
         
         // Get UI elements
-        _profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
-        _profileName = (TextView) findViewById(R.id.profileName);
-        _btn_fbLogin = (LoginButton) findViewById(R.id.btn_fbLogin);
+        getUIElements();
         
-        _iv_friendProfilePicture = (ImageView) findViewById(R.id.iv_friendProfilePicture);
-        _tv_friendProfileName = (TextView) findViewById(R.id.tv_friendProfileName);
-        _btn_getNextFriend = (Button) findViewById(R.id.btn_getNextFriend);
-        
-        // Resize Facebook login/logout button
-        resizeFbLoginBtn();
-        
-        // Set Facebook login permissions
-        _btn_fbLogin.setReadPermissions(Arrays.asList("public_profile", "user_friends"));
-		
-		// For getting next Facebook friend in the list
-		_btn_getNextFriend.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-
-				if(_friendsProfIDList.isEmpty() || _friendsProfNameList.isEmpty())
-					return;
-				
-				_fbDataSrc.open();
-				
-				Bitmap bm = _fbDataSrc.getProfilePic(
-						_friendsProfIDList.get(_currFbFriend));
-				_iv_friendProfilePicture.setImageBitmap(bm);
-				_tv_friendProfileName.setText(_friendsProfNameList.get(_currFbFriend));
-				_currFbFriend = ((_currFbFriend + 1) % _friendsProfIDList.size());
-				
-				_fbDataSrc.close();
-			}
-		});
+        // Set up interactive components
+        setUpInteractiveElements();
         
         _fbDataSrc = new FacebookDataSource(getApplicationContext());
         updateFbFriendsList();
@@ -170,11 +150,18 @@ public class MainFragment extends FragmentActivity {
 
         Profile profile = Profile.getCurrentProfile();
         if (enableButtons && profile != null) {
+        	
             _profilePictureView.setProfileId(profile.getId());
             _profileName.setText(profile.getName());
+            
+            _userStatus = FB_USER;
+            
         } else {
+        	
             _profilePictureView.setProfileId(null);
             _profileName.setText(R.string.guest);
+            
+            _userStatus = GUEST_USER;
         }
     }
 
@@ -424,7 +411,8 @@ public class MainFragment extends FragmentActivity {
 		}
 	}
     
-	public static Bitmap getFacebookProfilePicture(String userID) {
+    /** Blocking function to get Facebook profile picture */
+	private Bitmap getFacebookProfilePicture(String userID) {
 		
 		URL imageURL = null;
 		Bitmap bitmap = null; 
@@ -440,5 +428,66 @@ public class MainFragment extends FragmentActivity {
 		}
 
 		return bitmap;
+	}
+	
+	/** Getting UI Elements from layout */
+	private void getUIElements() {
+		
+		// For displaying current user information
+		_profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
+        _profileName = (TextView) findViewById(R.id.profileName);
+        _btn_fbLogin = (LoginButton) findViewById(R.id.btn_fbLogin);
+        
+        // Main menu buttons
+        _btn_viewTutorial = (Button) findViewById(R.id.btn_viewTutorial);
+        _btn_playGame = (Button) findViewById(R.id.btn_playGame);
+        _btn_viewHighscores = (Button) findViewById(R.id.btn_viewHighscores);
+        _btn_settings = (Button) findViewById(R.id.btn_settings);
+	}
+	
+	/** Set up interactive UI Elements */
+	private void setUpInteractiveElements() {
+		
+		// Resize Facebook login/logout button
+        resizeFbLoginBtn();
+        
+        // Set Facebook login permissions
+        _btn_fbLogin.setReadPermissions(
+        		Arrays.asList("public_profile", "user_friends"));
+		
+		// For viewing tutorial
+        _btn_viewTutorial.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+
+				
+			}
+		});
+        
+        // For starting game
+        _btn_playGame.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+
+				Intent gameIntent = new Intent(
+						getApplicationContext(), GameFragment.class);
+				gameIntent.putExtra(USER_STATUS, _userStatus);
+	        	startActivity(gameIntent);
+			}
+		});
+        
+        // For viewing highscores
+        _btn_viewHighscores.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+
+				
+			}
+		});
+        
+        // For adjusting application settings
+        _btn_settings.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+
+				
+			}
+		});
 	}
 }
