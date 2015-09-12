@@ -137,7 +137,7 @@ public class FacebookDataSource {
 		
 		ArrayList<String> profileIDList = new ArrayList<String>();
 		
-		String rawQueryStr = "SELECT " + AlmightySQLiteHelper.FB_COLUMN_PROF_NAME
+		String rawQueryStr = "SELECT " + AlmightySQLiteHelper.FB_COLUMN_PROF_ID
 				+ " FROM " + AlmightySQLiteHelper.FB_TABLE_NAME
 				+ " ORDER BY RANDOM() LIMIT "
 				+ String.valueOf(count);
@@ -155,17 +155,19 @@ public class FacebookDataSource {
 		return profileIDList;
 	}
 	
+	/** Get random list of name options */
 	public ArrayList<String> getRandomNameOptions(String profileID, int count) {
 		
 		ArrayList<String> profileNameOptionsList = new ArrayList<String>();
 		
-		String rawQueryStr = "SELECT ? FROM ? WHERE ? <> ? "
-				+ "ORDER BY RANDOM() LIMIT ?;";
-		Cursor cursor = _database.rawQuery(rawQueryStr, new String[] {
-				AlmightySQLiteHelper.FB_COLUMN_PROF_NAME,
-				AlmightySQLiteHelper.FB_TABLE_NAME,
-				AlmightySQLiteHelper.FB_COLUMN_PROF_ID,
-				profileID, String.valueOf(count) });
+		String rawQueryStr = "SELECT " + AlmightySQLiteHelper.FB_COLUMN_PROF_NAME
+				+ " FROM " + AlmightySQLiteHelper.FB_TABLE_NAME
+				+ " WHERE " + AlmightySQLiteHelper.FB_COLUMN_PROF_ID
+				+ " <> " + profileID
+				+ " ORDER BY RANDOM() LIMIT "
+				+ String.valueOf(count);
+		
+		Cursor cursor = _database.rawQuery(rawQueryStr, new String []{});
 		
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFF"
+    android:orientation="vertical"
+    tools:context=".GameModeFragment" >
+
+    <LinearLayout
+        android:id="@+id/ll_gameMode"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="20dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="visible" >
+                
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:orientation="vertical" >
+            
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:textSize="32sp"
+	            android:textStyle="bold"
+	            android:text="@string/select_game_mode" />
+	        
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.85"
+            android:gravity="center"
+            android:orientation="vertical" >
+	        
+	        <Button
+		        android:id="@+id/btn_timedChallengeMode"
+		        android:layout_width="400dp"
+		        android:layout_height="100dp"
+		        android:layout_gravity="center"
+		        android:padding="10dp"
+		        android:layout_margin="15dp"
+		        android:text="@string/timed_challenge"
+		        android:textSize="32sp"
+		        android:textStyle="bold|italic"
+		        android:textAllCaps="false" />
+	        
+		    <Button
+		        android:id="@+id/btn_campaignMode"
+		        android:layout_width="400dp"
+		        android:layout_height="100dp"
+		        android:layout_gravity="center"
+		        android:padding="10dp"
+		        android:layout_margin="15dp"
+		        android:text="@string/campaign_mode"
+		        android:textSize="32sp"
+		        android:textStyle="bold|italic"
+		        android:textAllCaps="false" />
+		    
+		    <Button
+		        android:id="@+id/btn_ffMode"
+		        android:layout_width="400dp"
+		        android:layout_height="100dp"
+		        android:layout_gravity="center"
+		        android:padding="10dp"
+		        android:layout_margin="15dp"
+		        android:text="@string/ff_mode"
+		        android:textSize="32sp"
+		        android:textStyle="bold|italic"
+		        android:textAllCaps="false" />
+		    
+	    </LinearLayout>
+    </LinearLayout>
+    
+    <!-- Linear Layout for Timed Challenge -->
+    <LinearLayout
+        android:id="@+id/ll_timedChallenge"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="20dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="invisible" >
+        
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:orientation="vertical" >
+            
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:gravity="center"
+	            android:textSize="32sp"
+	            android:textStyle="bold"
+	            android:text="@string/prev_highscore" />
+	        
+	        <TextView
+	            android:id="@+id/tv_timedChallenge_highscore"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:layout_margin="10dp"
+	            android:gravity="center"
+	            android:textSize="32sp"
+	            android:textStyle="bold"
+	            android:text="@string/highscore_not_found" />
+	        
+        </LinearLayout>
+                
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7"
+            android:gravity="center"
+            android:orientation="vertical" >
+            
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:gravity="center"
+	            android:textSize="32sp"
+	            android:textStyle="bold"
+	            android:text="@string/timed_challenge_inst" />
+	        
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:orientation="vertical" >
+	        
+	        <Button
+		        android:id="@+id/btn_startTimedChallenge"
+		        android:layout_width="400dp"
+		        android:layout_height="100dp"
+		        android:layout_gravity="center"
+		        android:padding="10dp"
+		        android:layout_margin="15dp"
+		        android:text="@string/start_game"
+		        android:textSize="32sp"
+		        android:textStyle="bold|italic"
+		        android:textAllCaps="false" />
+		    
+	    </LinearLayout>
+    </LinearLayout>
+    <!-- Linear Layout for Timed Challenge -->
+    
+</RelativeLayout>

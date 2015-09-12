@@ -38,6 +38,8 @@ import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 
 import cz3002.g4.util.BitmapUtil;
+import cz3002.g4.util.Const;
+import cz3002.g4.util.Const.UserStatus;
 import cz3002.g4.util.FacebookDataSource;
 
 public class MainFragment extends FragmentActivity {
@@ -72,11 +74,8 @@ public class MainFragment extends FragmentActivity {
     private Button _btn_viewHighscores = null;
     private Button _btn_settings = null;
     
-    // Play game
-    public static final String USER_STATUS = "USER_STATUS";
-    public static final String GUEST_USER = "GUEST";
-    public static final String FB_USER = "FACEBOOK";
-    private static String _userStatus = GUEST_USER;
+    // Status of the current user
+    private UserStatus _userStatus = UserStatus.GUEST;
 
     private enum PendingAction {
         NONE,
@@ -93,7 +92,7 @@ public class MainFragment extends FragmentActivity {
         setContentView(R.layout.main_frag);
         
 		// Get key hash for Facebook development
-        getKeyHash();
+        /*getKeyHash();*/
 
         if (savedInstanceState != null) {
             String name = savedInstanceState.getString(PENDING_ACTION_BUNDLE_KEY);
@@ -154,14 +153,14 @@ public class MainFragment extends FragmentActivity {
             _profilePictureView.setProfileId(profile.getId());
             _profileName.setText(profile.getName());
             
-            _userStatus = FB_USER;
+            _userStatus = UserStatus.FACEBOOK;
             
         } else {
         	
             _profilePictureView.setProfileId(null);
             _profileName.setText(R.string.guest);
             
-            _userStatus = GUEST_USER;
+            _userStatus = UserStatus.GUEST;
         }
     }
 
@@ -181,6 +180,7 @@ public class MainFragment extends FragmentActivity {
         }
     }
 
+	@SuppressWarnings("unused")
 	private void getKeyHash() {
 		// Add code to print out the key hash
 		try {
@@ -280,19 +280,24 @@ public class MainFragment extends FragmentActivity {
 			@Override
 			public void onCompleted(GraphResponse response) {
 				
+				Log.d("setFbGraphCallback", "Completed once!");
 				try {
-					JSONArray rawData = response.getJSONObject().getJSONArray(
-							"data");
+					JSONObject jsonObject = response.getJSONObject();
 					
-					for (int i = 0; i < rawData.length(); i++) {
-
-						JSONObject jsonObject = rawData.getJSONObject(i);
-
-						String friendID = jsonObject.getString("id");
-						String friendName = jsonObject.getString("name");
-
-						_friendsProfIDList.add(friendID);
-						_friendsProfNameList.add(friendName);
+					if(jsonObject != null) {
+					
+						JSONArray rawData = jsonObject.getJSONArray("data");
+						
+						for (int i = 0; i < rawData.length(); i++) {
+	
+							jsonObject = rawData.getJSONObject(i);
+	
+							String friendID = jsonObject.getString("id");
+							String friendName = jsonObject.getString("name");
+	
+							_friendsProfIDList.add(friendID);
+							_friendsProfNameList.add(friendName);
+						}
 					}
 
 					// Get next batch of results if it exists
@@ -338,7 +343,7 @@ public class MainFragment extends FragmentActivity {
         if(!bHasAccessToken || !bLoggedIn)
         	return;
         
-        Log.d("updateFbFriendsList", "I AM HERE!");
+        Log.d("updateFbFriendsList", "Go go go");
         
         // Initialize list to store profile ID and name of facebook friends
         _friendsProfIDList = new ArrayList<String>();
@@ -359,6 +364,8 @@ public class MainFragment extends FragmentActivity {
 		_pd_FbFriends.setCancelable(false);
 		_pd_FbFriends.setCanceledOnTouchOutside(false);
 		_pd_FbFriends.show();
+		
+		Log.d("updateFbFriendsList", "Function over!");
     }
     
     private class UpdateFbFriendsTask extends AsyncTask<String [], Void, String> {
@@ -468,8 +475,8 @@ public class MainFragment extends FragmentActivity {
 			public void onClick(View view) {
 
 				Intent gameIntent = new Intent(
-						getApplicationContext(), GameFragment.class);
-				gameIntent.putExtra(USER_STATUS, _userStatus);
+						getApplicationContext(), GameModeFragment.class);
+				gameIntent.putExtra(Const.USER_STATUS, _userStatus);
 	        	startActivity(gameIntent);
 			}
 		});

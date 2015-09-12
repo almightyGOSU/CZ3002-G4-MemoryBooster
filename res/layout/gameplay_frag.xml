@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFF"
+    android:orientation="vertical"
+    tools:context=".GamePlayFragment" >
+
+    <LinearLayout
+        android:id="@+id/ll_gamePlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="20dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="visible" >
+        
+        <!-- For displaying time -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="top|center_horizontal"
+            android:orientation="vertical" >
+           
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="UselessParent" >
+                
+                <TextView
+                    android:id="@+id/tv_gameTime"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentEnd="true"
+		            android:layout_marginEnd="10dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:text="@string/default_time" />
+                
+		        <TextView
+		            android:id="@+id/tv_gameTimeText"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_toStartOf="@id/tv_gameTime"
+		            android:layout_marginEnd="10dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:textStyle="bold"
+		            android:text="@string/elapsed_time" />
+	        </RelativeLayout> 
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables" >
+	        
+	        <ImageView
+	            android:id="@+id/iv_questionImage"
+	            android:contentDescription="@string/contentDesc_questionImage"
+	            android:layout_width="240dp"
+	            android:layout_height="240dp"
+	            android:layout_gravity="center"
+	            android:src="@drawable/stickman" />
+	        
+	        <TextView
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_marginTop="15dp"
+		            android:textSize="26sp"
+		            android:text="@string/question_text" />
+		    
+	    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_userChoices"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:gravity="center"
+            android:orientation="vertical" >
+	        
+            <LinearLayout
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center"
+	            android:orientation="horizontal" >
+	        
+	        <Button
+	            android:id="@+id/btn_option1"
+	            android:layout_width="0dp"
+	            android:layout_height="120dp"
+	            android:layout_gravity="center"
+	            android:layout_margin="15dp"
+	            android:layout_weight="4"
+	            android:padding="10dp"
+	            android:background="@drawable/btn_user_choice"
+	            android:text="@string/option1"
+	            android:textAllCaps="false"
+	            android:textSize="32sp"
+	            android:textStyle="bold|italic"
+	            tools:ignore="ButtonStyle" />
+	        
+		    <Button
+		        android:id="@+id/btn_option2"
+		        android:layout_width="0dp"
+		        android:layout_height="120dp"
+		        android:layout_gravity="center"
+		        android:layout_margin="15dp"
+		        android:layout_weight="4"
+		        android:padding="10dp"
+		        android:background="@drawable/btn_user_choice"
+		        android:text="@string/option2"
+		        android:textAllCaps="false"
+		        android:textSize="32sp"
+		        android:textStyle="bold|italic"
+		        tools:ignore="ButtonStyle" />
+		    
+		    </LinearLayout>
+		    
+		    <LinearLayout
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center"
+	            android:orientation="horizontal" >
+	        
+	        <Button
+	            android:id="@+id/btn_option3"
+	            android:layout_width="0dp"
+	            android:layout_height="120dp"
+	            android:layout_gravity="center"
+	            android:layout_margin="15dp"
+	            android:layout_weight="4"
+	            android:padding="10dp"
+	            android:background="@drawable/btn_user_choice"
+	            android:text="@string/option3"
+	            android:textAllCaps="false"
+	            android:textSize="32sp"
+	            android:textStyle="bold|italic"
+	            tools:ignore="ButtonStyle" />
+	        
+		    <Button
+		        android:id="@+id/btn_option4"
+		        android:layout_width="0dp"
+		        android:layout_height="120dp"
+		        android:layout_gravity="center"
+		        android:layout_margin="15dp"
+		        android:layout_weight="4"
+		        android:padding="10dp"
+		        android:background="@drawable/btn_user_choice"
+		        android:text="@string/option4"
+		        android:textAllCaps="false"
+		        android:textSize="32sp"
+		        android:textStyle="bold|italic"
+		        tools:ignore="ButtonStyle" />
+		    
+		    </LinearLayout>
+		    
+	    </LinearLayout>
+	    
+        <!-- For displaying number of correct/wrong answers -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="bottom|center_horizontal"
+            android:orientation="vertical" >
+           
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="UselessParent" >
+                
+                <TextView
+                    android:id="@+id/tv_correctText"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentStart="true"
+		            android:layout_marginStart="10dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:textStyle="bold"
+		            android:text="@string/correct_text" />
+                
+		        <TextView
+		            android:id="@+id/tv_numCorrect"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_toEndOf="@id/tv_correctText"
+		            android:layout_marginStart="10dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:text="@string/zero_count" />
+		        
+		        <TextView
+                    android:id="@+id/tv_wrongText"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_toEndOf="@id/tv_numCorrect"
+		            android:layout_marginStart="40dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:textStyle="bold"
+		            android:text="@string/incorrect_text" />
+                
+		        <TextView
+		            android:id="@+id/tv_numWrong"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_toEndOf="@id/tv_wrongText"
+		            android:layout_marginStart="10dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:text="@string/zero_count" />
+	        </RelativeLayout> 
+        </LinearLayout>
+        <!-- For displaying number of correct/wrong answers -->
+        
+    </LinearLayout>
+</RelativeLayout>

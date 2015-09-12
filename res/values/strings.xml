@@ -27,4 +27,35 @@
     <string name="fb_friends">Facebook Friends</string>
     <!-- Dialog strings -->
     
+    <!-- Game mode strings -->
+    <string name="select_game_mode">Select a game mode!</string>
+    <string name="timed_challenge">Timed Challenge</string>
+    <string name="campaign_mode">Campaign Mode</string>
+    <string name="ff_mode">Fast &amp; Furious</string>
+    <string name="start_game">Start Game</string>
+    <!-- Game mode strings -->
+    
+    <!-- Game Instruction strings -->
+    <string name="timed_challenge_inst">Timed Challenge\n\n
+        You have 30 seconds to get as many questions correct as possible!\n\n
+        How will you fare? Try now!</string>
+    <string name="prev_highscore">Previous Highscore:</string>
+    <string name="highscore_not_found">No highscore found!</string>
+    <!-- Game Instruction strings -->
+    
+    <!-- Game Play strings -->
+    <string name="time_left">Time Left:</string>
+    <string name="elapsed_time">Elapsed Time:</string>
+    <string name="question_text">Who is the person in this picture?</string>
+    <string name="default_time">1:00</string>
+    <string name="contentDesc_questionImage">Question Image</string>
+    <string name="correct_text">Correct:</string>
+    <string name="incorrect_text">Incorrect:</string>
+    <string name="zero_count">0</string>
+    <string name="option1">Option 1</string>
+    <string name="option2">Option 2</string>
+    <string name="option3">Option 3</string>
+    <string name="option4">Option 4</string>
+    <!-- Game Play strings -->
+    
 </resources>
