@@ -3,6 +3,7 @@ package cz3002.g4.memoryBooster;
 import java.util.ArrayList;
 
 import cz3002.g4.util.Const;
+import cz3002.g4.util.LayoutUtil;
 import cz3002.g4.util.Const.GameMode;
 import cz3002.g4.util.Const.UserStatus;
 import cz3002.g4.util.FacebookDataSource;
@@ -100,8 +101,8 @@ public class GamePlayFragment extends FragmentActivity {
 		Button.OnClickListener btnOnClickListener = new Button.OnClickListener() {
 			public void onClick(View view) {
 				
-				// Disable all buttons first
-				_ll_userChoices.setClickable(false);
+				// Disable all buttons
+				LayoutUtil.setClickable(_ll_userChoices, false);
 
 				// Process chosen option
 				final Button btn = (Button) view;
@@ -120,10 +121,10 @@ public class GamePlayFragment extends FragmentActivity {
 					public void run() {
 						
 						btn.setBackgroundResource(R.drawable.btn_user_choice);
-						getNextQuestion();
 						
 						// Enable all buttons
-						_ll_userChoices.setClickable(true);
+						LayoutUtil.setClickable(_ll_userChoices, true);
+						getNextQuestion();
 					}
 				}, 750);
 			}
@@ -175,8 +176,12 @@ public class GamePlayFragment extends FragmentActivity {
 	private void getNextQuestion() {
 		
 		// FOR HACKING
-		if(_currQuestionNum >= _numQuestions)
+		if(_currQuestionNum >= _numQuestions) {
+			
+			// Disable all buttons
+			LayoutUtil.setClickable(_ll_userChoices, false);
 			return;
+		}
 		
 		_currQuestion = _questionSet.get(_currQuestionNum);
 		
@@ -190,6 +195,9 @@ public class GamePlayFragment extends FragmentActivity {
 		_currQuestionNum++;
 		if(_currQuestionNum >= _numQuestions) {
 			
+			// Should trigger some score calculation
+			// Saving score, progress to database
+			// Saving score to global highscore table
 			Log.d("GamePlayFragment", "GAME OVER!!");
 		}
 	}
