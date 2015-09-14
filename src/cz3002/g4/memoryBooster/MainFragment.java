@@ -109,7 +109,27 @@ public class MainFragment extends FragmentActivity {
         setUpInteractiveElements();
         
         _fbDataSrc = new FacebookDataSource(getApplicationContext());
-        updateFbFriendsList();
+        
+        // Check if application is navigating back to main menu from other screens
+        boolean bNavigatingBackToMain = false;
+        Intent intent = getIntent();
+        if(intent != null) {
+        	if(intent.hasExtra(Const.BACK_TO_MAIN)) {
+        		
+        		bNavigatingBackToMain = intent.getBooleanExtra(
+        				Const.BACK_TO_MAIN, false);
+        	}
+        }
+        
+        // Do stuff required for new launch
+        if(!bNavigatingBackToMain) {
+        	
+        	Log.d("MainFragment onCreate", "I am here due to new launch!");
+        	updateFbFriendsList();
+        }
+        else {
+        	Log.d("MainFragment onCreate", "Navigated back to main menu!");
+        }
     }
 
     @Override
@@ -211,6 +231,7 @@ public class MainFragment extends FragmentActivity {
                         handlePendingAction();
                         updateUI();
                         
+                        Log.d("initFacebook", "I am here onSuccess!");
                         // Login success, update Facebook friends list
                         updateFbFriendsList();
                     }
