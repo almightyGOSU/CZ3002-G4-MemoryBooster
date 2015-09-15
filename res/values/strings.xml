@@ -33,6 +33,7 @@
     <string name="campaign_mode">Campaign Mode</string>
     <string name="ff_mode">Fast &amp; Furious</string>
     <string name="start_game">Start Game</string>
+    <string name="empty"></string>
     <!-- Game mode strings -->
     
     <!-- Game Instruction strings -->

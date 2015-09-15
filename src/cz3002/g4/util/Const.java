@@ -18,6 +18,9 @@ public class Const {
 		FF;
 	}
 	
+	/** Only used for Campaign Mode */
+	public static final String GAME_LEVEL = "GAME LEVEL";
+	
 	/** Duration in seconds for the Timed Challenge */
 	public static final int TIMED_CHALLENGE_DURATION = 15;
 	
@@ -30,4 +33,17 @@ public class Const {
 	
 	/** Number of levels for Campaign Mode */
 	public static final int CAMPAIGN_LEVELS = 12;
+	
+	/*
+	  	// Retain journal information here
+		SharedPreferences preferences = getPreferences(
+				Activity.MODE_PRIVATE);
+		SharedPreferences.Editor editor = preferences.edit();
+				
+		editor.putBoolean(JournalFragment.PREF_RELOAD_JOURNAL,
+				_reloadJournal);
+
+		// Commit to storage
+		editor.apply();
+	 */
 }
