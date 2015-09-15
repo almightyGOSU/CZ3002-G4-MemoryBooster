@@ -23,4 +23,11 @@ public class Const {
 	
 	/** Number of pre-generated questions for Timed Challenge */
 	public static final int TIMED_CHALLENGE_QUESTIONS = 15;
+	
+	/** For calculating highscore for Timed Challenge */
+	public static final int TC_CORRECT_MULTIPLIER = 150;
+	public static final int TC_INCORRECT_MULTIPLIER = -25;
+	
+	/** Number of levels for Campaign Mode */
+	public static final int CAMPAIGN_LEVELS = 12;
 }

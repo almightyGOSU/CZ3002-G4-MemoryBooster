@@ -54,6 +54,7 @@ public class GamePlayFragment extends FragmentActivity {
     private int _numQuestions = 0;
     private int _numCorrect = 0;
     private int _numWrong = 0;
+    private int _score = 0;
     
     // Timers
     private CountDownTimer _cdTimer = null;
@@ -251,28 +252,20 @@ public class GamePlayFragment extends FragmentActivity {
 				// Disable all buttons
 				LayoutUtil.setClickable(_ll_userChoices, false);
 				
-				Toast.makeText(getApplicationContext(),
-						"Game Over! Calculating highscore..\n\n"
-						+ "Going back to main menu, for now :)",
-						Toast.LENGTH_LONG).show();
-				
-				// Go back main menu after 3000 ms
-				final Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						
-						// Go back main menu, for now
-						Intent intent = new Intent(
-								getApplicationContext(), MainFragment.class);
-						intent.putExtra(Const.BACK_TO_MAIN, true);
-						startActivity(intent);
-					}
-				}, 3000);
+				// Start AsyncTask for updating local database and post to server
+				new HighscoreTask().execute();
 			}
 		};
 		
 		_cdTimer.start();
+	}
+	
+	private int calculateScore() {
+		
+		int score = (_numCorrect * Const.TC_CORRECT_MULTIPLIER) +
+				(_numWrong * Const.TC_INCORRECT_MULTIPLIER);
+		
+		return (score > 0) ? score : 0;
 	}
 	
 	private class GenerateQuestionsTask extends AsyncTask<String, Void, String> {
@@ -360,6 +353,69 @@ public class GamePlayFragment extends FragmentActivity {
 			// Start a new Timer
 			startNewTimer(TimeUtil.secondsToMilliseconds(
 					Const.TIMED_CHALLENGE_DURATION), 1000);
+			return;
+		}
+	}
+	
+	private class HighscoreTask extends AsyncTask<Void, Void, Void> {
+		
+		protected void onPreExecute() {
+			
+			Log.d("HighscoreTask", "I am here in onPreExecute!");
+			
+			_pd_gameStatus = new ProgressDialog(GamePlayFragment.this);
+			_pd_gameStatus.setIndeterminate(true);
+			_pd_gameStatus.setMessage(
+					StringUtil.enlargeString("Calculating Score.."));
+			_pd_gameStatus.setCancelable(false);
+			_pd_gameStatus.setCanceledOnTouchOutside(false);
+			_pd_gameStatus.show();
+		}
+		
+		// Generate questions
+		// params[0]: Number of questions to generate
+		protected Void doInBackground(Void... params) {
+			
+			Log.d("HighscoreTask", "I am here in doInBackground!");
+			
+			// Calculate score
+			_score = calculateScore();
+			
+			Log.d("HighscoreTask", "Highscore: " + _score);
+			
+			_pd_gameStatus.setMessage(
+					StringUtil.enlargeString("Updating Highscore Table.."));
+			
+			// Local highscore table
+			// ...
+			
+			// Online highscore table
+			// ...
+			
+			return null;
+		}
+
+		protected void onPostExecute(Void result) {
+			
+			Log.d("HighscoreTask", "I am here in onPostExecute!");
+			
+			_pd_gameStatus.dismiss();
+			
+			// Go to post-game page
+			// Go back main menu after 3000 ms
+			final Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					
+					// Go back main menu, for now
+					Intent intent = new Intent(
+							getApplicationContext(), MainFragment.class);
+					intent.putExtra(Const.BACK_TO_MAIN, true);
+					startActivity(intent);
+				}
+			}, 3000);
+			
 			return;
 		}
 	}
