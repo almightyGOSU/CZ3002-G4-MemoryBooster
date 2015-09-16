@@ -9,8 +9,10 @@ import cz3002.g4.util.Const.UserStatus;
 import cz3002.g4.util.FacebookDataSource;
 import cz3002.g4.util.StringUtil;
 import cz3002.g4.util.TimeUtil;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -94,8 +96,10 @@ public class GamePlayFragment extends FragmentActivity {
 		}
 		else if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {
 			
-			_gameLevel = intent.getIntExtra(Const.GAME_LEVEL);
-			numQuestions = (2 * _gameLevel) + 1;
+			_gameLevel = intent.getIntExtra(Const.GAME_LEVEL, 1);
+			_numQuestions = (2 * _gameLevel) + 1;
+			
+			Log.d("CM", "gameLevel: " + _gameLevel + ", numQn: " + _numQuestions);
 		}
 		
 		// Generate question set
@@ -218,7 +222,7 @@ public class GamePlayFragment extends FragmentActivity {
 			LayoutUtil.setClickable(_ll_userChoices, false);
 			
 			// Check for Campaign Mode
-			if(_gameMode == Const.GAME_MODE.CAMPAIGN_MODE) {
+			if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {
 				
 				// Start AsyncTask for updating local database and post to server
 				new HighscoreTask().execute();
@@ -291,21 +295,22 @@ public class GamePlayFragment extends FragmentActivity {
 	
 	private int calculateStars() {
 		
-		if(_numCorrect == 0) {
-			return 0;
-		}
-		
+		// All correct, 3 stars
 		if(_numCorrect == _numQuestions) {
 			return 3;
 		}
 		
+		// 2/3 correct, 2 stars
+		if(_numCorrect >= ((_numQuestions/3)*2)) {
+			return 2;
+		}
+		
+		// 1/3 correct, 1 stars
 		if(_numCorrect >= (_numQuestions/3)) {
 			return 1;
 		}
 		
-		if(_numCorrect >= (_numQuestions/3*2)) {
-			return 2;
-		}
+		return 0;
 	}
 	
 	private class GenerateQuestionsTask extends AsyncTask<String, Void, String> {
@@ -425,8 +430,8 @@ public class GamePlayFragment extends FragmentActivity {
 			
 			Log.d("HighscoreTask", "I am here in doInBackground!");
 			
-			SharedPreferences preferences = getPreferences(
-				Activity.MODE_PRIVATE);
+			SharedPreferences preferences = getSharedPreferences(
+					Const.SHARED_PREF, Activity.MODE_PRIVATE);
 			
 			// Timed Challenge
 			_currentHighscore = preferences.getInt(
@@ -436,7 +441,7 @@ public class GamePlayFragment extends FragmentActivity {
         	_currentLevelStars = preferences.getInt(
         		Const.GameMode.CAMPAIGN_MODE.toString() + _gameLevel, 0);
         	_nextLevelStars = preferences.getInt(
-        		Const.GameMode.CAMPAIGN_MODE.toString() + (_gameLevel + 1), 0);
+        		Const.GameMode.CAMPAIGN_MODE.toString() + (_gameLevel + 1), -1);
 		
 			if(_gameMode == Const.GameMode.TIMED_CHALLENGE) {
 				
@@ -474,13 +479,14 @@ public class GamePlayFragment extends FragmentActivity {
 						_levelStars);
 						
 					if(_gameLevel < Const.CAMPAIGN_LEVELS) {
-						if(_nextLevelStars == -1) {
+						if(_levelStars >= 2 && _nextLevelStars == -1) {
 							
 							editor.putInt(
-								Const.GameMode.CAMPAIGN_MODE.toString() + (_gameLevel + 1),
-								0);
+								Const.GameMode.CAMPAIGN_MODE.toString() +
+								(_gameLevel + 1), 0);
 						}
 					}
+					
 					editor.apply();
 				}
 			}

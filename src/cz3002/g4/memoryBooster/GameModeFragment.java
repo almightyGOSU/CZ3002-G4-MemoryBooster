@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -60,7 +59,8 @@ public class GameModeFragment extends FragmentActivity {
         _tc_highscore = 0;
     	_cmProgress = new int[Const.CAMPAIGN_LEVELS];
         
-        SharedPreferences preferences = getPreferences(Activity.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(
+				Const.SHARED_PREF, Activity.MODE_PRIVATE);
         
         _tc_highscore = preferences.getInt(
         		Const.GameMode.TIMED_CHALLENGE.toString(), 0);
@@ -171,8 +171,6 @@ public class GameModeFragment extends FragmentActivity {
 				final Button btn = (Button) v;
 				String cmLevel = (String) btn.getText();
 				
-				Log.d("CampaignMode", cmLevel);
-				
 				_gameMode = GameMode.CAMPAIGN_MODE;
 
 				Intent gameIntent = new Intent(
@@ -198,16 +196,10 @@ public class GameModeFragment extends FragmentActivity {
 			_cmProgress[0] = 0;
 		}
 		
-		// Hardcoded for testing
-		_cmProgress[0] = 3;
-		_cmProgress[1] = 2;
-		_cmProgress[2] = 3;
-		_cmProgress[3] = 2;
-		_cmProgress[4] = 0;
-		
 		for(int i = 0; i < _cmProgress.length; i++) {
-        	
+			
 			switch(_cmProgress[i]) {
+			
 			case 0:
 				// Unlocked
 				_btn_campaignModeLevels[i].setClickable(true);
