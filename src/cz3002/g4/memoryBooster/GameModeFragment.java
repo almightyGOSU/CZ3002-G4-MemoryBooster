@@ -172,6 +172,17 @@ public class GameModeFragment extends FragmentActivity {
 				String cmLevel = (String) btn.getText();
 				
 				Log.d("CampaignMode", cmLevel);
+				
+				_gameMode = GameMode.CAMPAIGN_MODE;
+
+				Intent gameIntent = new Intent(
+						getApplicationContext(), GamePlayFragment.class);
+				
+				gameIntent.putExtra(Const.USER_STATUS, _userStatus);
+				gameIntent.putExtra(Const.GAME_MODE, _gameMode);
+				gameIntent.putExtra(Const.GAME_LEVEL, Integer.parseInt(cmLevel));
+				
+	        	startActivity(gameIntent);
 			}
 		};
 		
@@ -191,7 +202,7 @@ public class GameModeFragment extends FragmentActivity {
 		_cmProgress[0] = 3;
 		_cmProgress[1] = 2;
 		_cmProgress[2] = 3;
-		_cmProgress[3] = 1;
+		_cmProgress[3] = 2;
 		_cmProgress[4] = 0;
 		
 		for(int i = 0; i < _cmProgress.length; i++) {

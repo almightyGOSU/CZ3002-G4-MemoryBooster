@@ -54,7 +54,18 @@ public class GamePlayFragment extends FragmentActivity {
     private int _numQuestions = 0;
     private int _numCorrect = 0;
     private int _numWrong = 0;
+    
+    // Score for Timed Challenge
     private int _score = 0;
+    
+    // Level for Campaign Mode
+    private int _gameLevel = 0;
+    private int _levelStars = 0;
+    
+    // Existing statistics
+    private int _currentHighscore = 0;
+    private int _currentLevelStars = 0;
+    private int _nextLevelStars = 0;
     
     // Timers
     private CountDownTimer _cdTimer = null;
@@ -76,8 +87,18 @@ public class GamePlayFragment extends FragmentActivity {
 		setUpInteractiveElements();
 		setUpTimeText();
 		
-		// Testing using 'Timed Challenge' mode
-		_numQuestions = Const.TIMED_CHALLENGE_QUESTIONS;
+		// Determine number of questions to generate
+		if(_gameMode == Const.GameMode.TIMED_CHALLENGE) {
+			
+			_numQuestions = Const.TIMED_CHALLENGE_QUESTIONS;
+		}
+		else if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {
+			
+			_gameLevel = intent.getIntExtra(Const.GAME_LEVEL);
+			numQuestions = (2 * _gameLevel) + 1;
+		}
+		
+		// Generate question set
 		new GenerateQuestionsTask().execute(String.valueOf(_numQuestions));
     }
 
@@ -137,9 +158,6 @@ public class GamePlayFragment extends FragmentActivity {
 						if(!_bGameOver) {
 							
 							btn.setBackgroundResource(R.drawable.btn_user_choice);
-							
-							// Enable all buttons
-							LayoutUtil.setClickable(_ll_userChoices, true);
 							getNextQuestion();
 						}
 					}
@@ -192,13 +210,20 @@ public class GamePlayFragment extends FragmentActivity {
 	/** Gets the next question! */
 	private void getNextQuestion() {
 		
-		// Timed Challenge - to be fixed
-		// To be used to safeguard against all generated questions
-		// answered before timer runs out
 		if(_currQuestionNum >= _numQuestions) {
+			
+			_bGameOver = true;
 			
 			// Disable all buttons
 			LayoutUtil.setClickable(_ll_userChoices, false);
+			
+			// Check for Campaign Mode
+			if(_gameMode == Const.GAME_MODE.CAMPAIGN_MODE) {
+				
+				// Start AsyncTask for updating local database and post to server
+				new HighscoreTask().execute();
+			}
+			
 			return;
 		}
 		
@@ -212,13 +237,9 @@ public class GamePlayFragment extends FragmentActivity {
 		_btn_option4.setText(questionOptions.get(3));
 		
 		_currQuestionNum++;
-		if(_currQuestionNum >= _numQuestions) {
-			
-			// Should trigger some score calculation
-			// Saving score, progress to database
-			// Saving score to global highscore table
-			Log.d("GamePlayFragment", "GAME OVER!!");
-		}
+		
+		// Enable all buttons
+		LayoutUtil.setClickable(_ll_userChoices, true);
 	}
 	
 	private void startNewTimer(long millisInFuture, long countDownInterval) {
@@ -266,6 +287,25 @@ public class GamePlayFragment extends FragmentActivity {
 				(_numWrong * Const.TC_INCORRECT_MULTIPLIER);
 		
 		return (score > 0) ? score : 0;
+	}
+	
+	private int calculateStars() {
+		
+		if(_numCorrect == 0) {
+			return 0;
+		}
+		
+		if(_numCorrect == _numQuestions) {
+			return 3;
+		}
+		
+		if(_numCorrect >= (_numQuestions/3)) {
+			return 1;
+		}
+		
+		if(_numCorrect >= (_numQuestions/3*2)) {
+			return 2;
+		}
 	}
 	
 	private class GenerateQuestionsTask extends AsyncTask<String, Void, String> {
@@ -350,9 +390,17 @@ public class GamePlayFragment extends FragmentActivity {
 			// Reset game status
 			_bGameOver = false;
 			
-			// Start a new Timer
-			startNewTimer(TimeUtil.secondsToMilliseconds(
-					Const.TIMED_CHALLENGE_DURATION), 1000);
+			if(_gameMode == Const.GameMode.TIMED_CHALLENGE) {
+				
+				// Start a new Timer
+				startNewTimer(TimeUtil.secondsToMilliseconds(
+						Const.TIMED_CHALLENGE_DURATION), 1000);
+						
+			} else if (_gameMode == Const.GameMode.CAMPAIGN_MODE) {
+				
+				// Start a stopwatch to record elapsed time
+				// ...
+			}
 			return;
 		}
 	}
@@ -372,25 +420,70 @@ public class GamePlayFragment extends FragmentActivity {
 			_pd_gameStatus.show();
 		}
 		
-		// Generate questions
-		// params[0]: Number of questions to generate
+		// Post-game tasks
 		protected Void doInBackground(Void... params) {
 			
 			Log.d("HighscoreTask", "I am here in doInBackground!");
 			
-			// Calculate score
-			_score = calculateScore();
+			SharedPreferences preferences = getPreferences(
+				Activity.MODE_PRIVATE);
 			
-			Log.d("HighscoreTask", "Highscore: " + _score);
-			
-			_pd_gameStatus.setMessage(
-					StringUtil.enlargeString("Updating Highscore Table.."));
-			
-			// Local highscore table
-			// ...
-			
-			// Online highscore table
-			// ...
+			// Timed Challenge
+			_currentHighscore = preferences.getInt(
+        		Const.GameMode.TIMED_CHALLENGE.toString(), 0);
+        	
+        	// Campaign Mode
+        	_currentLevelStars = preferences.getInt(
+        		Const.GameMode.CAMPAIGN_MODE.toString() + _gameLevel, 0);
+        	_nextLevelStars = preferences.getInt(
+        		Const.GameMode.CAMPAIGN_MODE.toString() + (_gameLevel + 1), 0);
+		
+			if(_gameMode == Const.GameMode.TIMED_CHALLENGE) {
+				
+				// Calculate score
+				_score = calculateScore();
+				
+				Log.d("HighscoreTask", "Highscore: " + _score);
+				
+				_pd_gameStatus.setMessage(
+						StringUtil.enlargeString("Updating Highscore Table.."));
+				
+				// Update local highscore and global highscore if needed
+				if(_score > _currentHighscore) {
+					
+					SharedPreferences.Editor editor = preferences.edit();
+					editor.putInt(Const.GameMode.TIMED_CHALLENGE.toString(),
+							_score);
+					editor.apply();
+					
+					// Update global highscore
+				}
+			}
+			else if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {
+				
+				// Calculate stars gained for this level
+				_levelStars = calculateStars();
+				
+				// Update campaign progress if needed
+				if(_levelStars > _currentLevelStars) {
+					
+					SharedPreferences.Editor editor = preferences.edit();
+					
+					editor.putInt(
+						Const.GameMode.CAMPAIGN_MODE.toString() + _gameLevel,
+						_levelStars);
+						
+					if(_gameLevel < Const.CAMPAIGN_LEVELS) {
+						if(_nextLevelStars == -1) {
+							
+							editor.putInt(
+								Const.GameMode.CAMPAIGN_MODE.toString() + (_gameLevel + 1),
+								0);
+						}
+					}
+					editor.apply();
+				}
+			}
 			
 			return null;
 		}
