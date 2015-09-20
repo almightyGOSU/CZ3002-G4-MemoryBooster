@@ -12,7 +12,6 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -88,13 +87,13 @@ public class PostGameFragment extends FragmentActivity {
         
         _bNewHighscore = intent.getBooleanExtra(Const.TC_NEW_HIGHSCORE, false);
         
-		Log.d("PostGameFragment", _gameMode.toString());
+		/*Log.d("PostGameFragment", _gameMode.toString());
 		Log.d("PostGameFragment", _gameLevel + ", " + _elapsedTime);
 		Log.d("PostGameFragment", "Correct: " + _numCorrect + "/" +
 				_numQnsAnswered + ", Wrong: " + _numWrong + "/" +
 				_numQnsAnswered);
 		Log.d("PostGameFragment", _score + ", " + _levelStars + ", New HS: "
-				+ (_bNewHighscore ? "Y" : "N"));
+				+ (_bNewHighscore ? "Y" : "N"));*/
 		
 		getUIElements();
 		setUpInteractiveElements();
@@ -144,6 +143,7 @@ public class PostGameFragment extends FragmentActivity {
 		_btn_socialShare.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
+				//TODO: Add sharing to social media
 				Toast.makeText(getApplicationContext(), "Share to Social Media",
 						Toast.LENGTH_SHORT).show();
 			}

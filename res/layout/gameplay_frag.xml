@@ -84,13 +84,37 @@
             android:orientation="vertical"
             tools:ignore="UseCompoundDrawables" >
 	        
-	        <ImageView
-	            android:id="@+id/iv_questionImage"
-	            android:contentDescription="@string/contentDesc_questionImage"
-	            android:layout_width="240dp"
-	            android:layout_height="240dp"
-	            android:layout_gravity="center"
-	            android:src="@drawable/stickman" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+                tools:ignore="UselessParent">
+		        
+                <ImageView
+		            android:contentDescription="@string/contentDesc_questionImage"
+		            android:layout_width="260dp"
+		            android:layout_height="260dp"
+		            android:background="@drawable/bg_question"
+		            android:layout_gravity="center"
+		            android:layout_centerInParent="true" />
+                
+		        <ImageView
+		            android:id="@+id/iv_questionImage"
+		            android:contentDescription="@string/contentDesc_questionImage"
+		            android:layout_width="240dp"
+		            android:layout_height="240dp"
+		            android:layout_gravity="center"
+		            android:layout_centerInParent="true"
+		            android:src="@drawable/stickman" />
+		        
+		        <ImageView
+		            android:contentDescription="@string/contentDesc_questionImage"
+		            android:layout_width="260dp"
+		            android:layout_height="260dp"
+		            android:background="@drawable/frame_question"
+		            android:layout_gravity="center"
+		            android:layout_centerInParent="true" />
+		        
+	        </RelativeLayout>
 	        
 	        <TextView
 		            android:layout_width="wrap_content"
@@ -106,6 +130,7 @@
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_weight="4"
+            android:paddingTop="10dp"
             android:gravity="center"
             android:orientation="vertical" >
 	        
@@ -203,7 +228,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.7"
             android:gravity="bottom|center_horizontal"
             android:orientation="vertical" >
            

@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,16 +33,23 @@ public class GameModeFragment extends FragmentActivity {
 	private TextView _tv_timedChallenge_highscore = null;
 	private Button _btn_startTimedChallenge = null;
 	
-	// UI Elements for Campaign Mode
+	// UI Elements for Campaign Mode Level Selection
 	private LinearLayout _ll_campaignModeLevels = null;
 	private Button [] _btn_campaignModeLevels = null;
+	
+	// UI Elements for Campaign Mode
+	private LinearLayout _ll_campaignModeInst = null;
+	private TextView _tv_cm_currentLevel = null;
+	private ImageView _iv_cm_currentLevelStars = null;
+	private TextView _tv_cm_starsForNextLevel = null;
+	private Button _btn_startCampaignMode = null;
 	
 	// Highscore (Timed Challenge) and Progress (Campaign Mode)
 	private int _tc_highscore = 0;
 	private int [] _cmProgress = null;
+	private String _cmLevel = null;
 	
 	// For crossfading
-	private int _shortAnimationDuration;
 	private int _mediumAnimationDuration;
 
     @Override
@@ -56,9 +65,7 @@ public class GameModeFragment extends FragmentActivity {
 		getUIElements();
 		setUpInteractiveElements();
 		
-		// Retrieve and cache the system's default "short" and "medium" animation time
-		_shortAnimationDuration = getResources().getInteger(
-                android.R.integer.config_shortAnimTime);
+		// Retrieve and cache the system's default "medium" animation time
 		_mediumAnimationDuration = getResources().getInteger(
                 android.R.integer.config_mediumAnimTime);
     }
@@ -123,6 +130,13 @@ public class GameModeFragment extends FragmentActivity {
 		_btn_campaignModeLevels[9] = (Button) findViewById(R.id.btn_cm_level10);
 		_btn_campaignModeLevels[10] = (Button) findViewById(R.id.btn_cm_level11);
 		_btn_campaignModeLevels[11] = (Button) findViewById(R.id.btn_cm_level12);
+		
+		// For Campaign Mode -- Instructions
+		_ll_campaignModeInst = (LinearLayout) findViewById(R.id.ll_campaignModeInst);
+		_tv_cm_currentLevel = (TextView) findViewById(R.id.tv_cm_currentLevel);
+		_iv_cm_currentLevelStars = (ImageView) findViewById(R.id.iv_cm_currentLevelStars);
+		_tv_cm_starsForNextLevel = (TextView) findViewById(R.id.tv_cm_starsForNextLevel);
+		_btn_startCampaignMode = (Button) findViewById(R.id.btn_startCampaignMode);
 	}
 	
 	/** Set up interactive UI Elements */
@@ -138,7 +152,7 @@ public class GameModeFragment extends FragmentActivity {
 			}
 		});
         
-		// For selecting 'Campaign Mode'
+		// For selecting 'Campaign Mode Levels'
 		_btn_campaignMode.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
@@ -152,7 +166,7 @@ public class GameModeFragment extends FragmentActivity {
 		_btn_ffMode.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
-				Toast.makeText(getApplicationContext(), "Fast & Furious",
+				Toast.makeText(getApplicationContext(), "Work In Progess!",
 						Toast.LENGTH_SHORT).show();
 			}
 		});
@@ -180,24 +194,82 @@ public class GameModeFragment extends FragmentActivity {
 			public void onClick(View v) {
 				
 				final Button btn = (Button) v;
-				String cmLevel = (String) btn.getText();
-				
+				_cmLevel = (String) btn.getText();
 				_gameMode = GameMode.CAMPAIGN_MODE;
 
-				Intent gameIntent = new Intent(
-						getApplicationContext(), GamePlayFragment.class);
+				int selectedLevel = Integer.parseInt(_cmLevel);
+				int levelStars = _cmProgress[selectedLevel - 1];
 				
-				gameIntent.putExtra(Const.USER_STATUS, _userStatus);
-				gameIntent.putExtra(Const.GAME_MODE, _gameMode);
-				gameIntent.putExtra(Const.GAME_LEVEL, Integer.parseInt(cmLevel));
+				Log.d("CAMPAIGN MODE", "Selected Level: " + selectedLevel);
+				Log.d("CAMPAIGN MODE", "Level Stars: " + levelStars);
 				
-	        	startActivity(gameIntent);
+				_tv_cm_currentLevel.setText("Level " + _cmLevel);
+				
+				switch (levelStars) {
+
+				case 1:
+					_iv_cm_currentLevelStars.setBackgroundResource(
+							R.drawable.stars1large);
+					break;
+					
+				case 2:
+					_iv_cm_currentLevelStars.setBackgroundResource(
+							R.drawable.stars2large);
+					break;
+					
+				case 3:
+					_iv_cm_currentLevelStars.setBackgroundResource(
+							R.drawable.stars3large);
+					break;
+
+				default:
+					_iv_cm_currentLevelStars.setBackgroundResource(
+							R.drawable.stars0large);
+					break;
+				}
+				
+				// Show instructions on unlocking next level
+				if (selectedLevel == Const.CAMPAIGN_LEVELS) {
+					
+					_tv_cm_starsForNextLevel.setText("Congratulations!\n"
+							+ "You have reached the final level of Campaign"
+							+ " Mode!");
+					
+				} else {
+
+					int numQuestions = ((2 * selectedLevel) + 1);
+					int reqCorrect = ((numQuestions/3)*2);
+					
+					_tv_cm_starsForNextLevel.setText("Get " +
+							reqCorrect + "/" + numQuestions +
+							" questions correct\nto unlock Level " +
+							(selectedLevel + 1) + "!");
+				}
+				
+				// Switch layouts
+				LayoutUtil.crossfade(_ll_campaignModeInst,
+						_ll_campaignModeLevels, _mediumAnimationDuration);
 			}
 		};
 		
 		for(Button b : _btn_campaignModeLevels) {
 			b.setOnClickListener(ocl);
 		}
+		
+		// For starting a new 'Campaign Mode' game
+		_btn_startCampaignMode.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+
+				Intent gameIntent = new Intent(
+						getApplicationContext(), GamePlayFragment.class);
+				
+				gameIntent.putExtra(Const.USER_STATUS, _userStatus);
+				gameIntent.putExtra(Const.GAME_MODE, _gameMode);
+				gameIntent.putExtra(Const.GAME_LEVEL, Integer.parseInt(_cmLevel));
+				
+	        	startActivity(gameIntent);
+			}
+		});
 	}
 	
 	private void setCampaignModeLevels() {

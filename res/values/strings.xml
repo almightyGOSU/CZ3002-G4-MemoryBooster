@@ -37,11 +37,11 @@
     <!-- Game mode strings -->
     
     <!-- Game Instruction strings -->
-    <string name="timed_challenge_inst">Timed Challenge\n\n
+    <string name="timed_challenge_inst">
         You have 15 seconds to get as many questions correct as possible!\n\n
         How will you fare? Try now!</string>
     <string name="prev_highscore">Previous Highscore:</string>
-    <string name="highscore_not_found">No highscore found!</string>
+    <string name="campaign_mode_inst">How will you fare? Try now!</string>
     <!-- Game Instruction strings -->
     
     <!-- Game Play strings -->

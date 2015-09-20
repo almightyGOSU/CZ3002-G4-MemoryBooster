@@ -55,6 +55,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="80dp"
         android:padding="10dp"
+        android:background="@drawable/btn_post_game"
         android:text="@string/view_tutorial"
         android:textSize="26sp"
         android:textStyle="bold" />
@@ -68,6 +69,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:padding="10dp"
+        android:background="@drawable/btn_post_game"
         android:text="@string/play_game"
         android:textSize="26sp"
         android:textStyle="bold" />
@@ -81,6 +83,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:padding="10dp"
+        android:background="@drawable/btn_post_game"
         android:text="@string/view_highscores"
         android:textSize="26sp"
         android:textStyle="bold" />
@@ -94,6 +97,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:padding="10dp"
+        android:background="@drawable/btn_post_game"
         android:text="@string/settings"
         android:textSize="26sp"
         android:textStyle="bold" />

@@ -323,8 +323,10 @@ public class GamePlayFragment extends FragmentActivity {
 				runOnUiThread(new Runnable() {
 					public void run() {
 						
-						_tv_gameTime.setText(TimeUtil.timeToString(
-								_stopwatch.elapsedTime()));
+						if(_stopwatch != null) {
+							_tv_gameTime.setText(TimeUtil.timeToString(
+									_stopwatch.elapsedTime()));
+						}
 					}
 				});
 			}

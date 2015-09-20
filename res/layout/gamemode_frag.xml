@@ -20,16 +20,16 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.15"
-            android:gravity="center"
+            android:layout_weight="0.25"
+            android:gravity="bottom"
             android:orientation="vertical" >
             
 	        <TextView
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_gravity="center"
-	            android:textSize="32sp"
-	            android:textStyle="bold"
+	            android:textSize="40sp"
+	            android:textStyle="bold|italic"
 	            android:text="@string/select_game_mode" />
 	        
         </LinearLayout>
@@ -39,6 +39,7 @@
             android:layout_height="0dp"
             android:layout_weight="0.85"
             android:gravity="center"
+            android:layout_marginTop="20dp"
             android:orientation="vertical" >
 	        
 	        <Button
@@ -48,6 +49,7 @@
 		        android:layout_gravity="center"
 		        android:padding="10dp"
 		        android:layout_margin="15dp"
+		        android:background="@drawable/btn_post_game"
 		        android:text="@string/timed_challenge"
 		        android:textSize="32sp"
 		        android:textStyle="bold|italic"
@@ -60,6 +62,7 @@
 		        android:layout_gravity="center"
 		        android:padding="10dp"
 		        android:layout_margin="15dp"
+		        android:background="@drawable/btn_post_game"
 		        android:text="@string/campaign_mode"
 		        android:textSize="32sp"
 		        android:textStyle="bold|italic"
@@ -72,12 +75,20 @@
 		        android:layout_gravity="center"
 		        android:padding="10dp"
 		        android:layout_margin="15dp"
+		        android:background="@drawable/btn_post_game"
 		        android:text="@string/ff_mode"
 		        android:textSize="32sp"
 		        android:textStyle="bold|italic"
 		        android:textAllCaps="false" />
 		    
 	    </LinearLayout>
+	    
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.2"
+            tools:ignore="NestedWeights" />
+
     </LinearLayout>
     
     <!-- Linear Layout for Timed Challenge -->
@@ -90,12 +101,32 @@
         android:padding="5dp"
         android:visibility="invisible" >
         
+        <!-- For displaying game mode -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.25"
+            android:layout_marginTop="5dp"
+            android:gravity="bottom|center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/timed_challenge"
+                android:textSize="56sp"
+                android:textStyle="bold|italic"
+                android:textAllCaps="false" />
+            
+        </LinearLayout>
+        
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_weight="0.15"
+            android:paddingBottom="20dp"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="horizontal" >
             
 	        <TextView
 	            android:layout_width="wrap_content"
@@ -114,8 +145,7 @@
 	            android:layout_margin="10dp"
 	            android:gravity="center"
 	            android:textSize="32sp"
-	            android:textStyle="bold"
-	            android:text="@string/highscore_not_found" />
+	            android:text="@string/zero_count" />
 	        
         </LinearLayout>
                 
@@ -137,11 +167,12 @@
 	        
         </LinearLayout>
 
+        <!-- Button for starting Timed Challenge -->
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.15"
-            android:gravity="center"
+            android:layout_weight="0.3"
+            android:gravity="bottom|center_horizontal"
             android:orientation="vertical" >
 	        
 	        <Button
@@ -151,6 +182,7 @@
 		        android:layout_gravity="center"
 		        android:padding="10dp"
 		        android:layout_margin="15dp"
+		        android:background="@drawable/btn_post_game"
 		        android:text="@string/start_game"
 		        android:textSize="32sp"
 		        android:textStyle="bold|italic"
@@ -160,7 +192,7 @@
     </LinearLayout>
     <!-- Linear Layout for Timed Challenge -->
     
-    <!-- Linear Layout for Campaign Mode -->
+    <!-- Linear Layout for Campaign Mode Level Selection-->
     <LinearLayout
         android:id="@+id/ll_campaignModeLevels"
         android:layout_width="fill_parent"
@@ -326,7 +358,7 @@
 	        
         </LinearLayout>
         
-        <!-- Second Row -->
+        <!-- Fourth Row -->
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
@@ -379,6 +411,129 @@
         </LinearLayout>
         
     </LinearLayout>
-    <!-- Linear Layout for Timed Challenge -->
+    <!-- Linear Layout for Campaign Mode Level Selection -->
+    
+    <!-- Linear Layout for Campaign Mode (Instructions) -->
+    <LinearLayout
+        android:id="@+id/ll_campaignModeInst"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="20dp"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="invisible" >
+        
+        <!-- For displaying game mode -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.18"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/campaign_mode"
+                android:textSize="56sp"
+                android:textStyle="bold|italic"
+                android:textAllCaps="false" />
+            
+        </LinearLayout>
+        
+        <!-- For display campaign level progress -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.35"
+            android:gravity="center"
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables" >
+            
+	        <TextView
+	            android:id="@+id/tv_cm_currentLevel"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:gravity="center"
+	            android:textSize="40sp"
+	            android:textStyle="bold"
+	            android:text="@string/campaign_level" />
+	        
+	        <ImageView
+	            android:id="@+id/iv_cm_currentLevelStars"
+	            android:layout_width="280dp"
+	            android:layout_height="120dp"
+	            android:contentDescription="@string/contentDesc_questionImage"
+	            android:drawingCacheQuality="high"
+	            android:visibility="visible" />
+	        
+        </LinearLayout>
+        
+        <!-- For displaying number of questions to answer correctly
+        in order to unlock the next level -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:orientation="vertical" >
+            
+	        <TextView
+	            android:id="@+id/tv_cm_starsForNextLevel"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:gravity="center"
+	            android:textSize="36sp"
+	            android:textStyle="bold"
+	            android:text="@string/empty" />
+	        
+        </LinearLayout>
+        
+        <!-- For displaying "Try now" text -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.25"
+            android:gravity="center_horizontal|top"
+            android:orientation="vertical" >
+            
+	        <TextView
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:gravity="center"
+	            android:textSize="32sp"
+	            android:textStyle="bold"
+	            android:text="@string/campaign_mode_inst" />
+	        
+        </LinearLayout>
+
+        <!-- Button for starting Campaign Mode -->
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.3"
+            android:gravity="bottom|center_horizontal"
+            android:orientation="vertical" >
+	        
+	        <Button
+		        android:id="@+id/btn_startCampaignMode"
+		        android:layout_width="400dp"
+		        android:layout_height="100dp"
+		        android:layout_gravity="center"
+		        android:padding="10dp"
+		        android:layout_margin="15dp"
+		        android:background="@drawable/btn_post_game"
+		        android:text="@string/start_game"
+		        android:textSize="32sp"
+		        android:textStyle="bold|italic"
+		        android:textAllCaps="false" />
+		    
+	    </LinearLayout>
+    </LinearLayout>
+    <!-- Linear Layout for Campaign Mode (Instructions) -->
     
 </RelativeLayout>
