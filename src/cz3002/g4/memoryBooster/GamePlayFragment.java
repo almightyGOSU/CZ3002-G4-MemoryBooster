@@ -1,12 +1,15 @@
 package cz3002.g4.memoryBooster;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cz3002.g4.util.Const;
 import cz3002.g4.util.LayoutUtil;
 import cz3002.g4.util.Const.GameMode;
 import cz3002.g4.util.Const.UserStatus;
 import cz3002.g4.util.FacebookDataSource;
+import cz3002.g4.util.Stopwatch;
 import cz3002.g4.util.StringUtil;
 import cz3002.g4.util.TimeUtil;
 import android.app.Activity;
@@ -24,7 +27,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class GamePlayFragment extends FragmentActivity {
 	
@@ -32,6 +34,8 @@ public class GamePlayFragment extends FragmentActivity {
 	private GameMode _gameMode = null;
 	
 	// UI Elements
+	private TextView _tv_questionNumText = null;
+	private TextView _tv_questionNum = null;
 	private TextView _tv_gameTimeText = null;
 	private TextView _tv_gameTime = null;
 	private ImageView _iv_questionImage = null;
@@ -59,10 +63,12 @@ public class GamePlayFragment extends FragmentActivity {
     
     // Score for Timed Challenge
     private int _score = 0;
+    private boolean _bNewHighscore = false;
     
     // Level for Campaign Mode
     private int _gameLevel = 0;
     private int _levelStars = 0;
+    private long _elapsedTime = 0;
     
     // Existing statistics
     private int _currentHighscore = 0;
@@ -71,6 +77,8 @@ public class GamePlayFragment extends FragmentActivity {
     
     // Timers
     private CountDownTimer _cdTimer = null;
+    private Stopwatch _stopwatch = null;
+    private Timer _timer = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +126,9 @@ public class GamePlayFragment extends FragmentActivity {
     
     /** Getting UI Elements from layout */
 	private void getUIElements() {
+		
+		_tv_questionNumText = (TextView) findViewById(R.id.tv_questionNumText);
+		_tv_questionNum = (TextView) findViewById(R.id.tv_questionNum);
 		
 		_tv_gameTimeText = (TextView) findViewById(R.id.tv_gameTimeText);
 		_tv_gameTime = (TextView) findViewById(R.id.tv_gameTime);
@@ -224,6 +235,12 @@ public class GamePlayFragment extends FragmentActivity {
 			// Check for Campaign Mode
 			if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {
 				
+				// Stop the stopwatch and record elapsed time
+				stopStopwatch();
+				
+				Log.d("Campaign Mode GG", "Elapsed Time: " +
+						TimeUtil.timeToString(_elapsedTime));
+				
 				// Start AsyncTask for updating local database and post to server
 				new HighscoreTask().execute();
 			}
@@ -241,6 +258,12 @@ public class GamePlayFragment extends FragmentActivity {
 		_btn_option4.setText(questionOptions.get(3));
 		
 		_currQuestionNum++;
+		
+		// For Campaign Mode
+		if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {
+			_tv_questionNum.setText(
+					_currQuestionNum + "/" + _numQuestions);
+		}
 		
 		// Enable all buttons
 		LayoutUtil.setClickable(_ll_userChoices, true);
@@ -285,14 +308,51 @@ public class GamePlayFragment extends FragmentActivity {
 		_cdTimer.start();
 	}
 	
+	private void startStopwatch() {
+		
+		// For keeping track of time
+		_stopwatch = new Stopwatch();
+		
+		// For repeated updating of elapsed time
+		_timer = new Timer();
+		_timer.scheduleAtFixedRate(new TimerTask() {
+
+			@Override
+			public void run() {
+				
+				runOnUiThread(new Runnable() {
+					public void run() {
+						
+						_tv_gameTime.setText(TimeUtil.timeToString(
+								_stopwatch.elapsedTime()));
+					}
+				});
+			}
+			
+		}, 0, 100);
+	}
+	
+	private void stopStopwatch() {
+		
+		_elapsedTime = _stopwatch.elapsedTime();
+		_stopwatch = null;
+		
+		_timer.cancel();
+		_timer = null;
+	}
+	
+	/** Calculate score for Timed Challenge */
 	private int calculateScore() {
 		
 		int score = (_numCorrect * Const.TC_CORRECT_MULTIPLIER) +
 				(_numWrong * Const.TC_INCORRECT_MULTIPLIER);
 		
+		score += (_currQuestionNum * Const.TC_QNS_ANSWERED_BONUS);
+		
 		return (score > 0) ? score : 0;
 	}
 	
+	/** Calculate stars gained for Campaign Mode */
 	private int calculateStars() {
 		
 		// All correct, 3 stars
@@ -340,14 +400,14 @@ public class GamePlayFragment extends FragmentActivity {
 			// Generate questions
 			_questionSet = QuestionGenerator.generateFbQuestions(
 					_fbDataSrc, numQuestions);
+			_currQuestionNum = 0;
 			
 			Log.d("GenerateQuestionsTask",
 					"# of Questions: " + _questionSet.size());
 			
 			// TEMPORARY fix to prevent app crashing when user
 			// has too little facebook friends?
-			// Lesser than 4 is still a problem obviously..
-			// Not enough friends to generate 'choices' for questions
+			// Acts as a upper bound for all game modes!
 			if(_questionSet.size() < _numQuestions) {
 				
 				_numQuestions = _questionSet.size();
@@ -357,9 +417,27 @@ public class GamePlayFragment extends FragmentActivity {
 			runOnUiThread(new Runnable() {
 				public void run() {
 					
-					// Timed Challenge - Reset countdown text
-					_tv_gameTime.setText(TimeUtil.timeToString(
-									Const.TIMED_CHALLENGE_DURATION));
+					if(_gameMode == Const.GameMode.TIMED_CHALLENGE) {
+						
+						// Timed Challenge - Reset countdown text
+						_tv_gameTime.setText(TimeUtil.timeToString(
+										Const.TIMED_CHALLENGE_DURATION));
+						
+						// Hide number of questions
+						_tv_questionNumText.setVisibility(View.INVISIBLE);
+						_tv_questionNum.setVisibility(View.INVISIBLE);
+								
+					} else if (_gameMode == Const.GameMode.CAMPAIGN_MODE) {
+						
+						// Campaign Mode - Reset stopwatch text
+						_tv_gameTime.setText(TimeUtil.timeToString(0));
+						
+						// Show number of questions
+						_tv_questionNumText.setVisibility(View.VISIBLE);
+						_tv_questionNum.setVisibility(View.VISIBLE);
+						_tv_questionNum.setText(
+								_currQuestionNum + "/" + _numQuestions);
+					}
 					
 					// For getting the first question
 					getNextQuestion();
@@ -404,8 +482,9 @@ public class GamePlayFragment extends FragmentActivity {
 			} else if (_gameMode == Const.GameMode.CAMPAIGN_MODE) {
 				
 				// Start a stopwatch to record elapsed time
-				// ...
+				startStopwatch();
 			}
+			
 			return;
 		}
 	}
@@ -456,6 +535,9 @@ public class GamePlayFragment extends FragmentActivity {
 				// Update local highscore and global highscore if needed
 				if(_score > _currentHighscore) {
 					
+					// New highscore for Timed Challenge
+					_bNewHighscore = true;
+					
 					SharedPreferences.Editor editor = preferences.edit();
 					editor.putInt(Const.GameMode.TIMED_CHALLENGE.toString(),
 							_score);
@@ -491,6 +573,12 @@ public class GamePlayFragment extends FragmentActivity {
 				}
 			}
 			
+			try {	
+				Thread.sleep(800);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
 			return null;
 		}
 
@@ -501,19 +589,24 @@ public class GamePlayFragment extends FragmentActivity {
 			_pd_gameStatus.dismiss();
 			
 			// Go to post-game page
-			// Go back main menu after 3000 ms
-			final Handler handler = new Handler();
-			handler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					
-					// Go back main menu, for now
-					Intent intent = new Intent(
-							getApplicationContext(), MainFragment.class);
-					intent.putExtra(Const.BACK_TO_MAIN, true);
-					startActivity(intent);
-				}
-			}, 3000);
+			Intent postGameIntent = new Intent(getApplicationContext(),
+					PostGameFragment.class);
+			
+			// Pass in details needed for post-game page
+			postGameIntent.putExtra(Const.GAME_MODE, _gameMode);
+			postGameIntent.putExtra(Const.GAME_LEVEL, _gameLevel);
+			postGameIntent.putExtra(Const.TIME_TAKEN, 
+					TimeUtil.timeToString(_elapsedTime));
+			
+			postGameIntent.putExtra(Const.QUESTIONS_CORRECT, _numCorrect);
+			postGameIntent.putExtra(Const.QUESTIONS_INCORRECT, _numWrong);
+			
+			postGameIntent.putExtra(Const.TC_SCORE, _score);
+			postGameIntent.putExtra(Const.CM_STARS, _levelStars);
+			
+			postGameIntent.putExtra(Const.TC_NEW_HIGHSCORE, _bNewHighscore);
+			
+			startActivity(postGameIntent);
 			
 			return;
 		}

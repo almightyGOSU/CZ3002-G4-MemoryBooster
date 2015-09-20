@@ -35,7 +35,7 @@
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            android:layout_alignParentEnd="true"
-		            android:layout_marginEnd="10dp"
+		            android:layout_marginEnd="15dp"
 		            android:layout_centerVertical="true"
 		            android:textSize="26sp"
 		            android:text="@string/default_time" />
@@ -50,6 +50,29 @@
 		            android:textSize="26sp"
 		            android:textStyle="bold"
 		            android:text="@string/elapsed_time" />
+		        
+		        <TextView
+                    android:id="@+id/tv_questionNumText"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_alignParentStart="true"
+		            android:layout_marginStart="15dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:textStyle="bold"
+		            android:text="@string/question_num"
+		            android:visibility="invisible" />
+		        		        
+		        <TextView
+                    android:id="@+id/tv_questionNum"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_toEndOf="@id/tv_questionNumText"
+		            android:layout_marginStart="10dp"
+		            android:layout_centerVertical="true"
+		            android:textSize="26sp"
+		            android:text="@string/default_question"
+		            android:visibility="invisible" />
 	        </RelativeLayout> 
         </LinearLayout>
         

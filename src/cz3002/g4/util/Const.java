@@ -30,10 +30,20 @@ public class Const {
 	/** For calculating highscore for Timed Challenge */
 	public static final int TC_CORRECT_MULTIPLIER = 150;
 	public static final int TC_INCORRECT_MULTIPLIER = -25;
+	public static final int TC_QNS_ANSWERED_BONUS = 10;
 	
 	/** Number of levels for Campaign Mode */
 	public static final int CAMPAIGN_LEVELS = 12;
 	
 	/** For shared preferences */
 	public static final String SHARED_PREF = "MemoryBoosterPref";
+	
+	/** For passing information to Post-Game Page */
+	public static final String TIME_TAKEN = "TIME TAKEN";
+	public static final String NUM_QUESTIONS = "NUMBER OF QUESTIONS";
+	public static final String QUESTIONS_CORRECT = "QUESTIONS CORRECT";
+	public static final String QUESTIONS_INCORRECT = "QUESTIONS INCORRECT";
+	public static final String TC_SCORE = "TIMED CHALLENGE SCORE";
+	public static final String CM_STARS = "CAMPAIGN MODE STARS";
+	public static final String TC_NEW_HIGHSCORE = "TIMED CHALLENGE NEW HIGHSCORE";
 }

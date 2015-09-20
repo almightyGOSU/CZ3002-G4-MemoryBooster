@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import cz3002.g4.util.Const;
+import cz3002.g4.util.LayoutUtil;
 import cz3002.g4.util.Const.GameMode;
 import cz3002.g4.util.Const.UserStatus;
 
@@ -37,6 +38,10 @@ public class GameModeFragment extends FragmentActivity {
 	// Highscore (Timed Challenge) and Progress (Campaign Mode)
 	private int _tc_highscore = 0;
 	private int [] _cmProgress = null;
+	
+	// For crossfading
+	private int _shortAnimationDuration;
+	private int _mediumAnimationDuration;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,12 @@ public class GameModeFragment extends FragmentActivity {
 		
 		getUIElements();
 		setUpInteractiveElements();
+		
+		// Retrieve and cache the system's default "short" and "medium" animation time
+		_shortAnimationDuration = getResources().getInteger(
+                android.R.integer.config_shortAnimTime);
+		_mediumAnimationDuration = getResources().getInteger(
+                android.R.integer.config_mediumAnimTime);
     }
 
     @Override
@@ -122,8 +133,8 @@ public class GameModeFragment extends FragmentActivity {
 			public void onClick(View view) {
 
 				// Switch layouts
-				_ll_gameMode.setVisibility(View.INVISIBLE);
-				_ll_timedChallenge.setVisibility(View.VISIBLE);
+				LayoutUtil.crossfade(_ll_timedChallenge, _ll_gameMode,
+						_mediumAnimationDuration);
 			}
 		});
         
@@ -132,8 +143,8 @@ public class GameModeFragment extends FragmentActivity {
 			public void onClick(View view) {
 
 				// Switch layouts
-				_ll_gameMode.setVisibility(View.INVISIBLE);
-				_ll_campaignModeLevels.setVisibility(View.VISIBLE);
+				LayoutUtil.crossfade(_ll_campaignModeLevels, _ll_gameMode,
+						_mediumAnimationDuration);
 			}
 		});
 		

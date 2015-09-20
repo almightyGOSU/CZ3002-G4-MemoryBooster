@@ -38,7 +38,7 @@
     
     <!-- Game Instruction strings -->
     <string name="timed_challenge_inst">Timed Challenge\n\n
-        You have 30 seconds to get as many questions correct as possible!\n\n
+        You have 15 seconds to get as many questions correct as possible!\n\n
         How will you fare? Try now!</string>
     <string name="prev_highscore">Previous Highscore:</string>
     <string name="highscore_not_found">No highscore found!</string>
@@ -47,6 +47,8 @@
     <!-- Game Play strings -->
     <string name="time_left">Time Left:</string>
     <string name="elapsed_time">Elapsed Time:</string>
+    <string name="question_num">Question:</string>
+    <string name="default_question">0/0</string>
     <string name="question_text">Who is the person in this picture?</string>
     <string name="default_time">1:00</string>
     <string name="contentDesc_questionImage">Question Image</string>
@@ -58,5 +60,13 @@
     <string name="option3">Person 3</string>
     <string name="option4">Person 4</string>
     <!-- Game Play strings -->
+    
+    <!-- Post Game strings -->
+    <string name="campaign_level">Level</string>
+    <string name="time_taken">Time Taken:</string>
+    <string name="timed_challenge_score">Score:</string>
+    <string name="social_share">Share to Social Media</string>
+    <string name="back_to_main">Return to Main Menu</string>
+    <!-- Post Game strings -->
     
 </resources>
