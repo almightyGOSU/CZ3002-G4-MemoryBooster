@@ -277,11 +277,13 @@ containing a value of this type.
         public static final int com_facebook_tooltip_bubble_view_text_body=0x7f040017;
         public static final int com_facebook_tooltip_bubble_view_top_pointer=0x7f040015;
         public static final int display_always=0x7f040001;
+        public static final int et_promptUserInput=0x7f04005e;
         public static final int inline=0x7f04000d;
         public static final int iv_cm_currentLevelStars=0x7f04002f;
         public static final int iv_questionImage=0x7f040037;
         public static final int iv_starsImage=0x7f040059;
         public static final int large=0x7f040005;
+        public static final int layout_root=0x7f04005c;
         public static final int left=0x7f040010;
         public static final int ll_campaignModeInst=0x7f04002d;
         public static final int ll_campaignModeLevels=0x7f040020;
@@ -323,6 +325,7 @@ containing a value of this type.
         public static final int tv_postGame_scoreText=0x7f040057;
         public static final int tv_postGame_timeTaken=0x7f04004f;
         public static final int tv_postGame_timeTakenText=0x7f04004e;
+        public static final int tv_prompt_message=0x7f04005d;
         public static final int tv_questionNum=0x7f040036;
         public static final int tv_questionNumText=0x7f040035;
         public static final int tv_timedChallenge_highscore=0x7f04001e;
@@ -343,17 +346,18 @@ containing a value of this type.
         public static final int messenger_button_send_white_round=0x7f03000a;
         public static final int messenger_button_send_white_small=0x7f03000b;
         public static final int postgame_frag=0x7f03000c;
+        public static final int prompt=0x7f03000d;
     }
     public static final class string {
         public static final int app_id=0x7f050013;
         /**  Facebook built-in strings 
          */
         public static final int app_name=0x7f050011;
-        public static final int back_to_main=0x7f050038;
-        /**  Game Play strings 
+        public static final int back_to_main=0x7f050039;
+        /**   Prompt strings 
  Post Game strings 
          */
-        public static final int campaign_level=0x7f050034;
+        public static final int campaign_level=0x7f050035;
         public static final int campaign_mode=0x7f05001f;
         public static final int campaign_mode_inst=0x7f050025;
         public static final int com_facebook_image_download_unknown_error=0x7f05000e;
@@ -399,6 +403,10 @@ containing a value of this type.
         public static final int option4=0x7f050033;
         public static final int play_game=0x7f050019;
         public static final int prev_highscore=0x7f050024;
+        /**  Game Play strings 
+  Prompt strings 
+         */
+        public static final int prompt_message=0x7f050034;
         public static final int question_num=0x7f050028;
         public static final int question_text=0x7f05002a;
         /**  Dialog strings 
@@ -406,19 +414,19 @@ containing a value of this type.
          */
         public static final int select_game_mode=0x7f05001d;
         public static final int settings=0x7f05001b;
-        public static final int social_share=0x7f050037;
+        public static final int social_share=0x7f050038;
         public static final int start_game=0x7f050021;
         /**  Game Instruction strings 
  Game Play strings 
          */
         public static final int time_left=0x7f050026;
-        public static final int time_taken=0x7f050035;
+        public static final int time_taken=0x7f050036;
         public static final int timed_challenge=0x7f05001e;
         /**  Game mode strings 
  Game Instruction strings 
          */
         public static final int timed_challenge_inst=0x7f050023;
-        public static final int timed_challenge_score=0x7f050036;
+        public static final int timed_challenge_score=0x7f050037;
         public static final int view_highscores=0x7f05001a;
         public static final int view_tutorial=0x7f050018;
         public static final int zero_count=0x7f05002f;

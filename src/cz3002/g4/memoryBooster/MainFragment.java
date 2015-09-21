@@ -49,7 +49,7 @@ public class MainFragment extends FragmentActivity {
 
     // For displaying current user information
     private ProfilePictureView _profilePictureView = null;
-    private TextView _profileName = null;
+    private TextView _tv_profileName = null;
     private LoginButton _btn_fbLogin = null;
     
     // For getting Facebook data
@@ -76,6 +76,7 @@ public class MainFragment extends FragmentActivity {
     
     // Status of the current user
     private UserStatus _userStatus = UserStatus.GUEST;
+    private String _userProfileName = null;
 
     private enum PendingAction {
         NONE,
@@ -171,16 +172,18 @@ public class MainFragment extends FragmentActivity {
         if (enableButtons && profile != null) {
         	
             _profilePictureView.setProfileId(profile.getId());
-            _profileName.setText(profile.getName());
+            _tv_profileName.setText(profile.getName());
             
             _userStatus = UserStatus.FACEBOOK;
+            _userProfileName = profile.getName();
             
         } else {
         	
             _profilePictureView.setProfileId(null);
-            _profileName.setText(R.string.guest);
+            _tv_profileName.setText(R.string.guest);
             
             _userStatus = UserStatus.GUEST;
+            _userProfileName = null;
         }
     }
 
@@ -463,7 +466,7 @@ public class MainFragment extends FragmentActivity {
 		
 		// For displaying current user information
 		_profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
-        _profileName = (TextView) findViewById(R.id.profileName);
+        _tv_profileName = (TextView) findViewById(R.id.profileName);
         _btn_fbLogin = (LoginButton) findViewById(R.id.btn_fbLogin);
         
         // Main menu buttons
@@ -497,7 +500,10 @@ public class MainFragment extends FragmentActivity {
 
 				Intent gameIntent = new Intent(
 						getApplicationContext(), GameModeFragment.class);
+				
 				gameIntent.putExtra(Const.USER_STATUS, _userStatus);
+				gameIntent.putExtra(Const.USER_NAME, _userProfileName);
+				
 	        	startActivity(gameIntent);
 			}
 		});

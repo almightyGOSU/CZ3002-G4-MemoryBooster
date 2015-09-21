@@ -19,7 +19,9 @@ import cz3002.g4.util.Const.UserStatus;
 
 public class GameModeFragment extends FragmentActivity {
 	
+	// Status of current user
 	private UserStatus _userStatus;
+	private String _userProfileName;
 	private GameMode _gameMode;
 	
 	// UI Elements for selecting game modes
@@ -59,8 +61,9 @@ public class GameModeFragment extends FragmentActivity {
         setContentView(R.layout.gamemode_frag);
         
 		Intent intent = getIntent();
-		_userStatus = (UserStatus) intent
-				.getSerializableExtra(Const.USER_STATUS);
+		_userStatus = (UserStatus) intent.getSerializableExtra(
+				Const.USER_STATUS);
+		_userProfileName = intent.getStringExtra(Const.USER_NAME);
 		
 		getUIElements();
 		setUpInteractiveElements();
@@ -181,6 +184,7 @@ public class GameModeFragment extends FragmentActivity {
 						getApplicationContext(), GamePlayFragment.class);
 				
 				gameIntent.putExtra(Const.USER_STATUS, _userStatus);
+				gameIntent.putExtra(Const.USER_NAME, _userProfileName);
 				gameIntent.putExtra(Const.GAME_MODE, _gameMode);
 				
 	        	startActivity(gameIntent);
@@ -264,6 +268,7 @@ public class GameModeFragment extends FragmentActivity {
 						getApplicationContext(), GamePlayFragment.class);
 				
 				gameIntent.putExtra(Const.USER_STATUS, _userStatus);
+				gameIntent.putExtra(Const.USER_NAME, _userProfileName);
 				gameIntent.putExtra(Const.GAME_MODE, _gameMode);
 				gameIntent.putExtra(Const.GAME_LEVEL, Integer.parseInt(_cmLevel));
 				

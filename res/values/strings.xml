@@ -61,6 +61,10 @@
     <string name="option4">Person 4</string>
     <!-- Game Play strings -->
     
+    <!--  Prompt strings -->
+    <string name="prompt_message">Enter your name:</string>
+    <!--  Prompt strings -->
+    
     <!-- Post Game strings -->
     <string name="campaign_level">Level</string>
     <string name="time_taken">Time Taken:</string>

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.http.Header;
+
 import cz3002.g4.util.Const;
 import cz3002.g4.util.LayoutUtil;
 import cz3002.g4.util.Const.GameMode;
@@ -12,6 +14,11 @@ import cz3002.g4.util.FacebookDataSource;
 import cz3002.g4.util.Stopwatch;
 import cz3002.g4.util.StringUtil;
 import cz3002.g4.util.TimeUtil;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -30,7 +37,9 @@ import android.widget.TextView;
 
 public class GamePlayFragment extends FragmentActivity {
 	
+	// User status
 	private UserStatus _userStatus = null;
+	private String _userProfileName = null;
 	private GameMode _gameMode = null;
 	
 	// UI Elements
@@ -88,6 +97,7 @@ public class GamePlayFragment extends FragmentActivity {
         
         Intent intent = getIntent();
         _userStatus = (UserStatus) intent.getSerializableExtra(Const.USER_STATUS);
+        _userProfileName = intent.getStringExtra(Const.USER_NAME);
         _gameMode = (GameMode) intent.getSerializableExtra(Const.GAME_MODE);
         
 		Log.d("GamePlayFragment", _userStatus.toString());
@@ -375,6 +385,56 @@ public class GamePlayFragment extends FragmentActivity {
 		return 0;
 	}
 	
+	@SuppressLint("InflateParams")
+	private void updateGlobalHighscore(int score) {
+		
+		// Update global highscore
+		AsyncHttpClient client = new AsyncHttpClient();
+		String highscoreUrl = "http://52.76.1.45:8080/cz3002/rest/api/insertHighscore/";
+		
+		if(_userProfileName != null) {
+			highscoreUrl += ("name=" + _userProfileName + "&");
+		}
+		else {
+			highscoreUrl += ("name=" + "GUEST" + "&");
+		}
+		
+		highscoreUrl += ("score=" + score + "&");
+		
+		highscoreUrl += "is_social=";
+		if(_userStatus == Const.UserStatus.GUEST) {
+			highscoreUrl += "false";
+		}
+		else {
+			highscoreUrl += "true";
+		}
+		
+		client.get(highscoreUrl, new AsyncHttpResponseHandler() {
+
+		    @Override
+		    public void onStart() {
+		        // called before request is started
+		    }
+
+		    @Override
+		    public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+		        // called when response HTTP status is "200 OK"
+		    	Log.d("Update global highscore", "Success!!");
+		    }
+
+		    @Override
+		    public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+		        // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+		    	Log.d("Update global highscore", "Failure!!");
+		    }
+
+		    @Override
+		    public void onRetry(int retryNo) {
+		        // called when request is retried
+			}
+		});
+	}
+	
 	private class GenerateQuestionsTask extends AsyncTask<String, Void, String> {
 		
 		protected void onPreExecute() {
@@ -545,7 +605,13 @@ public class GamePlayFragment extends FragmentActivity {
 							_score);
 					editor.apply();
 					
-					// Update global highscore
+					// Submit a GET request for updating global highscore table
+					runOnUiThread(new Runnable() {
+						public void run() {
+							
+							updateGlobalHighscore(_score);
+						}
+					});
 				}
 			}
 			else if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {

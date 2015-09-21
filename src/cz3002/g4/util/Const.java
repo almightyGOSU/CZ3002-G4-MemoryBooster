@@ -18,6 +18,9 @@ public class Const {
 		FF;
 	}
 	
+	/** Used for storing name to be used for highscores */
+	public static final String USER_NAME = "USER NAME";
+	
 	/** Only used for Campaign Mode */
 	public static final String GAME_LEVEL = "GAME LEVEL";
 	
