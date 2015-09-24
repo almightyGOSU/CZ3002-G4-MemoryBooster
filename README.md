@@ -1,4 +1,4 @@
-# CZ3002_G4_MemoryBooster
+# CZ3002 G4 MemoryBooster
 
 <b>Android Application created for CZ3002 Advanced Software Engineering</b>
 
