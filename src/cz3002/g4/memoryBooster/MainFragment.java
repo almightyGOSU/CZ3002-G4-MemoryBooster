@@ -38,6 +38,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -102,6 +103,9 @@ public class MainFragment extends FragmentActivity {
     private boolean _bFbUpdating = false;
     private int _startedGenDownloads = 0;
     private int _completedGenDownloads = 0;
+    
+    // Fake Google+ sign in
+    private RelativeLayout _rl_fake_google = null;
 
     private enum PendingAction {
         NONE,
@@ -209,6 +213,9 @@ public class MainFragment extends FragmentActivity {
             _userStatus = UserStatus.FACEBOOK;
             _userProfileName = profile.getName();
             
+            // Hide fake Google+ sign in
+            _rl_fake_google.setVisibility(View.INVISIBLE);
+            
         } else {
         	
             _profilePictureView.setProfileId(null);
@@ -216,6 +223,9 @@ public class MainFragment extends FragmentActivity {
             
             _userStatus = UserStatus.GUEST;
             _userProfileName = null;
+            
+            // Show fake Google+ sign in
+            _rl_fake_google.setVisibility(View.VISIBLE);
         }
     }
 
@@ -242,7 +252,7 @@ public class MainFragment extends FragmentActivity {
 			PackageInfo info = getPackageManager().getPackageInfo(
 					"cz3002.g4.memoryBooster", PackageManager.GET_SIGNATURES);
 			for (Signature signature : info.signatures) {
-				MessageDigest md = MessageDigest.getInstance("SHA");
+				MessageDigest md = MessageDigest.getInstance("SHA-1");
 				md.update(signature.toByteArray());
 				Log.d("KeyHash:",
 						Base64.encodeToString(md.digest(), Base64.DEFAULT));
@@ -680,6 +690,9 @@ public class MainFragment extends FragmentActivity {
         _btn_playGame = (Button) findViewById(R.id.btn_playGame);
         _btn_viewHighscores = (Button) findViewById(R.id.btn_viewHighscores);
         _btn_settings = (Button) findViewById(R.id.btn_settings);
+        
+        // Fake Google+ Sign In
+        _rl_fake_google = (RelativeLayout) findViewById(R.id.rl_fake_google);
 	}
 	
 	/** Set up interactive UI Elements */
@@ -691,12 +704,24 @@ public class MainFragment extends FragmentActivity {
         // Set Facebook login permissions
         _btn_fbLogin.setReadPermissions(
         		Arrays.asList("public_profile", "user_friends"));
+        
+        // Fake Google+ Sign In
+        _rl_fake_google.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+
+				Toast.makeText(getApplicationContext(),
+						"'Google+ Sign In' is not yet available!",
+						Toast.LENGTH_LONG).show();
+			}
+		});
 		
-		// For viewing tutorial
+		// For viewing game tutorial
         _btn_viewTutorial.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
-				//TODO: View tutorial
+				Intent tutorialIntent = new Intent(
+						getApplicationContext(), TutorialFragment.class);
+	        	startActivity(tutorialIntent);
 			}
 		});
         

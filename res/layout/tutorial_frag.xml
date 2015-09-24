@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="20dp"
+    android:background="#FFF"
+    android:orientation="vertical"
+    tools:context=".TutorialFragment" >
+
+    <RelativeLayout
+        android:id="@+id/ll_tutorial_images"
+        android:layout_width="fill_parent"
+        android:layout_height="550dp"
+        android:layout_marginTop="25dp"
+        tools:ignore="UselessParent" >
+        
+        <Button
+            android:id="@+id/btn_previousImg"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/btn_prev_img" />
+        
+        <ImageSwitcher
+	        android:id="@+id/is_tutorialImages"
+	        android:layout_width="420dp"
+	        android:layout_height="520dp"
+	        android:layout_centerInParent="true"
+	        android:drawingCacheQuality="high" />
+                
+        <Button
+            android:id="@+id/btn_nextImg"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/btn_next_img" />
+        
+    </RelativeLayout>
+    
+    <TextView 
+        android:id="@+id/tv_tutorialImgStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_tutorial_images"
+        android:layout_marginTop="1dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+    
+    <Button
+        android:id="@+id/btn_tut_backToMain"
+        android:layout_width="440dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/btn_post_game"
+        android:padding="10dp"
+        android:text="@string/back_to_main"
+        android:textAllCaps="false"
+        android:textSize="36sp"
+        android:textStyle="bold|italic" />
+
+</RelativeLayout>

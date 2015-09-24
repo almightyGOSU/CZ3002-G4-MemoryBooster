@@ -610,11 +610,11 @@ public class GamePlayFragment extends FragmentActivity {
 				
 				Log.d("HighscoreTask", "Highscore: " + _score);
 				
-				_pd_gameStatus.setMessage(
-						StringUtil.enlargeString("Updating Highscore Table.."));
-				
 				// Update local highscore and global highscore if needed
 				if(_score > _currentHighscore) {
+					
+					_pd_gameStatus.setMessage(
+							StringUtil.enlargeString("Updating Highscore Table.."));
 					
 					// New highscore for Timed Challenge
 					_bNewHighscore = true;

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:padding="20dp"
+    android:padding="10dp"
     android:background="#FFF"
     android:orientation="vertical"
     tools:context=".MainFragment" >
@@ -13,9 +13,9 @@
         android:id="@+id/profile_layout"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="4.2"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:orientation="vertical"
         android:padding="5dp" >
 
@@ -24,15 +24,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            facebook:com_facebook_preset_size="normal" />
+            facebook:com_facebook_preset_size="large" />
 
         <TextView
             android:id="@+id/profileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="5dp"
-            android:textSize="22sp"
+            android:layout_marginTop="2dp"
+            android:textSize="28sp"
             android:textStyle="bold" />
         
         <com.facebook.login.widget.LoginButton
@@ -40,9 +40,37 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="center_horizontal"
-	        android:layout_marginTop="10dp"
+	        android:layout_marginTop="8dp"
 	        facebook:com_facebook_confirm_logout="true"
 	        facebook:com_facebook_tooltip_mode="never_display" />
+        
+        <!-- FAKE Google+ Sign In -->
+        <RelativeLayout
+            android:id="@+id/rl_fake_google"
+            android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp" >
+            
+			<ImageView
+			    android:layout_width="290dp"
+			    android:layout_height="120dp"
+			    android:background="@drawable/btn_googlenormal"
+			    android:contentDescription="@string/empty" />
+
+			<TextView
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_centerVertical="true"
+			    android:layout_marginStart="55dp"
+			    android:paddingBottom="2dp"
+			    android:text="@string/google_signin"
+			    android:textColor="#FFFFFF"
+			    android:textSize="20sp"
+			    android:textStyle="bold" />
+
+        </RelativeLayout>
+        <!-- FAKE Google+ Sign In -->
         
     </LinearLayout>
     
@@ -50,7 +78,8 @@
         android:id="@+id/main_buttons_layout"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="6"
+        android:layout_weight="5"
+        android:layout_marginTop="15dp"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="5dp" >
@@ -58,7 +87,7 @@
 	    <Button
 	        android:id="@+id/btn_viewTutorial"
 	        android:layout_width="400dp"
-	        android:layout_height="100dp"
+	        android:layout_height="85dp"
 	        android:padding="10dp"
 	        android:background="@drawable/btn_post_game"
 	        android:text="@string/view_tutorial"
@@ -69,9 +98,9 @@
 	    <Button
 	        android:id="@+id/btn_playGame"
 	        android:layout_width="400dp"
-	        android:layout_height="100dp"
+	        android:layout_height="85dp"
 	        android:layout_gravity="center_horizontal"
-	        android:layout_marginTop="20dp"
+	        android:layout_marginTop="15dp"
 	        android:padding="10dp"
 	        android:background="@drawable/btn_post_game"
 	        android:text="@string/play_game"
@@ -82,9 +111,9 @@
 	    <Button
 	        android:id="@+id/btn_viewHighscores"
 	        android:layout_width="400dp"
-	        android:layout_height="100dp"
+	        android:layout_height="85dp"
 	        android:layout_gravity="center_horizontal"
-	        android:layout_marginTop="20dp"
+	        android:layout_marginTop="15dp"
 	        android:padding="10dp"
 	        android:background="@drawable/btn_post_game"
 	        android:text="@string/view_highscores"
@@ -95,9 +124,9 @@
 	    <Button
 	        android:id="@+id/btn_settings"
 	        android:layout_width="400dp"
-	        android:layout_height="100dp"
+	        android:layout_height="85dp"
 	        android:layout_gravity="center_horizontal"
-	        android:layout_marginTop="20dp"
+	        android:layout_marginTop="15dp"
 	        android:padding="10dp"
 	        android:background="@drawable/btn_post_game"
 	        android:text="@string/settings"
