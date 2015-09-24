@@ -11,6 +11,7 @@ import cz3002.g4.util.LayoutUtil;
 import cz3002.g4.util.Const.GameMode;
 import cz3002.g4.util.Const.UserStatus;
 import cz3002.g4.util.FacebookDataSource;
+import cz3002.g4.util.GeneralDataSource;
 import cz3002.g4.util.Stopwatch;
 import cz3002.g4.util.StringUtil;
 import cz3002.g4.util.TimeUtil;
@@ -60,6 +61,9 @@ public class GamePlayFragment extends FragmentActivity {
 	
 	// FacebookDataSource
     private FacebookDataSource _fbDataSrc = null;
+    
+    // GeneralDataSource
+    private GeneralDataSource _genDataSrc = null;
     
     // Gameplay
     private boolean _bGameOver = false;
@@ -443,8 +447,8 @@ public class GamePlayFragment extends FragmentActivity {
 			
 			_pd_gameStatus = new ProgressDialog(GamePlayFragment.this);
 			_pd_gameStatus.setIndeterminate(true);
-			_pd_gameStatus.setMessage(
-					StringUtil.enlargeString("Generating questions.."));
+			_pd_gameStatus.setMessage(StringUtil.enlargeString(
+					"Generating questions.."));
 			_pd_gameStatus.setCancelable(false);
 			_pd_gameStatus.setCanceledOnTouchOutside(false);
 			_pd_gameStatus.show();
@@ -457,11 +461,26 @@ public class GamePlayFragment extends FragmentActivity {
 			Log.d("GenerateQuestionsTask", "I am here in doInBackground!");
 			
 			int numQuestions = Integer.parseInt(params[0]);
-			_fbDataSrc = new FacebookDataSource(getApplicationContext());
 			
-			// Generate questions
-			_questionSet = QuestionGenerator.generateFbQuestions(
-					_fbDataSrc, numQuestions);
+			if(_userStatus == Const.UserStatus.FACEBOOK) {
+				
+				// Generating questions from FB dataset
+				Log.d("GenerateQuestionsTask", "Using FB dataset");
+				_fbDataSrc = new FacebookDataSource(getApplicationContext());
+				_questionSet = QuestionGenerator.generateFbQuestions(
+						_fbDataSrc, numQuestions);
+				
+			} else if(_userStatus == Const.UserStatus.GOOGLEPLUS) {
+				
+			} else {
+				
+				// Generating questions from general dataset
+				Log.d("GenerateQuestionsTask", "Using general dataset");
+				_genDataSrc = new GeneralDataSource(getApplicationContext());
+				_questionSet = QuestionGenerator.generateGenQuestions(
+						_genDataSrc, numQuestions);
+			}
+			
 			_currQuestionNum = 0;
 			
 			Log.d("GenerateQuestionsTask",

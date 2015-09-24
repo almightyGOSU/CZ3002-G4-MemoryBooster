@@ -1,6 +1,9 @@
 package cz3002.g4.memoryBooster;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -8,13 +11,19 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -30,6 +39,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.*;
 import com.facebook.login.LoginManager;
@@ -37,8 +47,11 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.login.widget.ProfilePictureView;
 
+import cz3002.g4.util.AnswerTagPair;
 import cz3002.g4.util.BitmapUtil;
 import cz3002.g4.util.Const;
+import cz3002.g4.util.GeneralDataSource;
+import cz3002.g4.util.StringUtil;
 import cz3002.g4.util.Const.UserStatus;
 import cz3002.g4.util.FacebookDataSource;
 
@@ -55,10 +68,13 @@ public class MainFragment extends FragmentActivity {
     // For getting Facebook data
     private ArrayList<String> _friendsProfIDList = null;
     private ArrayList<String> _friendsProfNameList = null;
-    private ProgressDialog _pd_FbFriends = null;
+    private ProgressDialog _pd_dataRetrieval = null;
     
     // FacebookDataSource
     private FacebookDataSource _fbDataSrc = null;
+    
+    // GeneralDataSource
+    private GeneralDataSource _genDataSrc = null;
     
     // Facebook components
     private PendingAction pendingAction = PendingAction.NONE;
@@ -77,6 +93,15 @@ public class MainFragment extends FragmentActivity {
     // Status of the current user
     private UserStatus _userStatus = UserStatus.GUEST;
     private String _userProfileName = null;
+    
+    // For downloading Facebook profile information
+    private int _startedFbDownloads = 0;
+    private int _completedFbDownloads = 0;
+    
+    // For downloading 'general' dataset
+    private boolean _bFbUpdating = false;
+    private int _startedGenDownloads = 0;
+    private int _completedGenDownloads = 0;
 
     private enum PendingAction {
         NONE,
@@ -110,6 +135,7 @@ public class MainFragment extends FragmentActivity {
         setUpInteractiveElements();
         
         _fbDataSrc = new FacebookDataSource(getApplicationContext());
+        _genDataSrc = new GeneralDataSource(getApplicationContext());
         
         // Check if application is navigating back to main menu from other screens
         boolean bNavigatingBackToMain = false;
@@ -127,6 +153,12 @@ public class MainFragment extends FragmentActivity {
         	
         	Log.d("MainFragment onCreate", "I am here due to new launch!");
         	updateFbFriendsList();
+        	
+        	if(!_bFbUpdating) {
+        		// Update general dataset
+        		new UpdateGenDatasetTask().execute();
+        	}
+        		
         }
         else {
         	Log.d("MainFragment onCreate", "Navigated back to main menu!");
@@ -235,6 +267,7 @@ public class MainFragment extends FragmentActivity {
                         updateUI();
                         
                         Log.d("initFacebook", "I am here onSuccess!");
+                        
                         // Login success, update Facebook friends list
                         updateFbFriendsList();
                     }
@@ -347,6 +380,13 @@ public class MainFragment extends FragmentActivity {
 							params[i][1] = _friendsProfNameList.get(i);
 						}
 						
+						// Update number of facebook friends
+						SharedPreferences preferences = getSharedPreferences(
+								Const.SHARED_PREF, Activity.MODE_PRIVATE);
+						SharedPreferences.Editor editor = preferences.edit();
+						editor.putInt(Const.NUM_FB_FRIENDS, params.length);
+						editor.apply();
+						
 						// Start async task to update profile
 						// information of Facebook friends
 						new UpdateFbFriendsTask().execute(params);
@@ -382,12 +422,13 @@ public class MainFragment extends FragmentActivity {
 		        "me/friends", _params, HttpMethod.GET, _graphCallback).executeAsync();
 		
 		// Show dialog
-		_pd_FbFriends = new ProgressDialog(MainFragment.this);
-		_pd_FbFriends.setTitle(R.string.fb_friends);
-		_pd_FbFriends.setMessage("Retriving Facebook Friends List..");
-		_pd_FbFriends.setCancelable(false);
-		_pd_FbFriends.setCanceledOnTouchOutside(false);
-		_pd_FbFriends.show();
+		_pd_dataRetrieval = new ProgressDialog(MainFragment.this);
+		_pd_dataRetrieval.setTitle(R.string.fb_friends);
+		_pd_dataRetrieval.setMessage(StringUtil.enlargeString(
+				"Retriving Facebook Friends List..", 1.3f));
+		_pd_dataRetrieval.setCancelable(false);
+		_pd_dataRetrieval.setCanceledOnTouchOutside(false);
+		_pd_dataRetrieval.show();
 		
 		Log.d("updateFbFriendsList", "Function over!");
     }
@@ -398,8 +439,9 @@ public class MainFragment extends FragmentActivity {
 			
 			Log.d("UpdateFbFriendsTask", "I am here in onPreExecute!");
 			
-			_pd_FbFriends.setTitle(R.string.fb_friends);
-			_pd_FbFriends.setMessage("Updating Facebook Friends Information..");
+			_pd_dataRetrieval.setTitle(R.string.fb_friends);
+			_pd_dataRetrieval.setMessage(StringUtil.enlargeString(
+					"Updating Facebook Friends Information..", 1.3f));
 		}
 		
 		// Get Facebook friends information, store to database
@@ -408,26 +450,40 @@ public class MainFragment extends FragmentActivity {
 			Log.d("UpdateFbFriendsTask", "I am here in doInBackground!");
 			
 			// Open connection to database
+			Log.d("UpdateFbFriendsTask", "Opening FB db connection!");
 			_fbDataSrc.open();
 			
 			// Get all existing profile IDs
 			ArrayList<String> existingProfIDs = _fbDataSrc.getAllProfileID();
 			
-			for(String [] userInfo : params) {
+			for(final String [] userInfo : params) {
 				
 				if(existingProfIDs.contains(userInfo[0]))
 					continue;
 				
-				Log.d("UpdateFbFriendsTask", userInfo[0] + ", " + userInfo[1]);
-				
-				Bitmap bm = getFacebookProfilePicture(userInfo[0]);
-				if(bm != null) {
-					_fbDataSrc.insertFbFriend(userInfo[0], userInfo[1],
-							BitmapUtil.getBytes(bm));
-				}
+				_startedFbDownloads++;
+				new Thread() {
+					public void run() {
+						
+						//Log.d("UpdateFbFriendsTask", userInfo[0] + ", " + userInfo[1]);
+						
+						Bitmap bm = getFacebookProfilePicture(userInfo[0]);
+						if(bm != null) {
+							_fbDataSrc.insertFbFriend(userInfo[0], userInfo[1],
+									BitmapUtil.getBytes(bm));
+							
+							_completedFbDownloads++;
+							
+							Log.d("Completed Dl", userInfo[0] + ", " + userInfo[1]);
+						}
+					}
+				}.start();
 			}
 			
+			while(_completedFbDownloads != _startedFbDownloads);
+			
 			// Close connection to database
+			Log.d("UpdateFbFriendsTask", "Closing FB db connection!");
 			_fbDataSrc.close();
 			
 			return "Success";
@@ -436,9 +492,7 @@ public class MainFragment extends FragmentActivity {
 		protected void onPostExecute(String result) {
 			
 			Log.d("UpdateFbFriendsTask", "I am here in onPostExecute!");
-			
-			_pd_FbFriends.dismiss();
-			return;
+			new UpdateGenDatasetTask().execute();
 		}
 	}
     
@@ -450,6 +504,158 @@ public class MainFragment extends FragmentActivity {
 		try {
 			imageURL = new URL("https://graph.facebook.com/" + userID
 					+ "/picture?width=240&height=240");
+			bitmap = BitmapFactory.decodeStream(
+					imageURL.openConnection().getInputStream());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return bitmap;
+	}
+	
+	private class UpdateGenDatasetTask extends AsyncTask<Void, Void, String> {
+		
+		protected void onPreExecute() {
+			
+			Log.d("UpdateGenDatasetTask", "I am here in onPreExecute!");
+			
+			if(_pd_dataRetrieval == null) {
+				_pd_dataRetrieval = new ProgressDialog(MainFragment.this);
+				_pd_dataRetrieval.setCancelable(false);
+				_pd_dataRetrieval.setCanceledOnTouchOutside(false);
+			}
+			_pd_dataRetrieval.setTitle(R.string.gen_dataset);
+			_pd_dataRetrieval.setMessage(StringUtil.enlargeString(
+					"Updating 'General' Question Bank..", 1.3f));
+			_pd_dataRetrieval.show();
+		}
+		
+		// Get Facebook friends information, store to database
+		protected String doInBackground(Void... params) {
+			
+			Log.d("UpdateGenDatasetTask", "I am here in doInBackground!");
+			
+			// Open connection to database
+			Log.d("UpdateGenDatasetTask", "Opening Gen db connection!");
+			_genDataSrc.open();
+			
+			// Get all existing (answer, tag) pairs
+			ArrayList<AnswerTagPair> answerTagPairs =
+					_genDataSrc.getAllAnswerTag();
+			
+			String jsonData = getJSONData(Const.GEN_DATA_URL);
+			if(jsonData != null) {
+				try {
+					
+					JSONArray jsonArr = new JSONArray(jsonData);
+					for(int i = 0; i < jsonArr.length(); i++) {
+						
+						JSONObject jsonObj = jsonArr.getJSONObject(i);
+						String answer = jsonObj.getString("answer");
+						String tag = jsonObj.getString("tag");
+						String img_url = jsonObj.getString("image_url");
+						boolean bExists = false;
+						
+						for(AnswerTagPair atPair : answerTagPairs) {
+							if(atPair.getAnswer().equals(answer) &&
+									atPair.getTag().equals(tag)) {
+								bExists = true;
+								break;
+							}
+						}
+						
+						if(!bExists) {
+							getGeneralQuestion(answer, tag, img_url);
+						}
+					}
+					
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			while(_completedGenDownloads != _startedGenDownloads);
+			
+			// Close connection to database
+			Log.d("UpdateGenDatasetTask", "Closing Gen db connection!");
+			_genDataSrc.close();
+			
+			return "Success";
+		}
+
+		protected void onPostExecute(String result) {
+			
+			Log.d("UpdateGenDatasetTask", "I am here in onPostExecute!");
+			_pd_dataRetrieval.dismiss();
+		}
+	}
+	
+	private String getJSONData(String url) {
+		InputStream inputStream = null;
+		String result = null;
+		try {
+
+			// Create HttpClient
+			HttpClient httpclient = new DefaultHttpClient();
+
+			// Make GET request to the given URL
+			HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
+
+			// Receive response as inputStream
+			inputStream = httpResponse.getEntity().getContent();
+
+			// Convert inputstream to string
+			if (inputStream != null)
+				result = convertInputStreamToString(inputStream);
+
+		} catch (Exception e) {
+			Log.d("getJSONData", e.getLocalizedMessage());
+		}
+
+		return result;
+	}
+	
+	private String convertInputStreamToString(InputStream inputStream)
+			throws IOException {
+		
+		BufferedReader bufferedReader = new BufferedReader(
+				new InputStreamReader(inputStream));
+		String line = "";
+		String result = "";
+		while ((line = bufferedReader.readLine()) != null)
+			result += line;
+
+		inputStream.close();
+		return result;
+	}
+	
+	private void getGeneralQuestion(final String answer, final String tag, final String img_url) {
+		_startedGenDownloads++;
+		new Thread() {
+			public void run() {
+				
+				Bitmap bm = getGeneralImage(img_url);
+				if(bm != null) {
+					_genDataSrc.insertGenData(answer, tag,
+							BitmapUtil.getBytes(bm));
+					
+					_completedGenDownloads++;
+					
+					Log.d("Completed Dl", answer + ", " + tag);
+				}
+			}
+		}.start();
+	}
+	
+	/** Blocking function to get image for a 'general' question*/
+	private Bitmap getGeneralImage(String img_url) {
+		
+		URL imageURL = null;
+		Bitmap bitmap = null; 
+		try {
+			imageURL = new URL(img_url);
 			bitmap = BitmapFactory.decodeStream(
 					imageURL.openConnection().getInputStream());
 		} catch (MalformedURLException e) {
@@ -490,13 +696,36 @@ public class MainFragment extends FragmentActivity {
         _btn_viewTutorial.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
-				
+				//TODO: View tutorial
 			}
 		});
         
         // For starting game
         _btn_playGame.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
+				
+				// Check if user has enough facebook friends!
+				if(_userStatus == UserStatus.FACEBOOK) {
+					
+					SharedPreferences preferences = getSharedPreferences(
+							Const.SHARED_PREF, Activity.MODE_PRIVATE);
+					int numFbFriends = preferences.getInt(
+							Const.NUM_FB_FRIENDS, 0);
+					
+					Log.d("PlayGameBtn", "# of FB friends: " + numFbFriends);
+				
+					if(numFbFriends < Const.MIN_FB_FRIENDS) {
+						
+						_userStatus = UserStatus.GUEST;
+			            _userProfileName = null;
+			            
+			            Toast.makeText(getApplicationContext(),
+			            		"Not enough Facebook friends!\n"
+			            		+ "Playing using 'general' dataset..",
+			            		Toast.LENGTH_LONG).show();
+			            Log.d("PlayGameBtn", "Not enough FB friends");
+					}
+				}
 
 				Intent gameIntent = new Intent(
 						getApplicationContext(), GameModeFragment.class);
@@ -511,8 +740,8 @@ public class MainFragment extends FragmentActivity {
         // For viewing highscores
         _btn_viewHighscores.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-
 				
+				//TODO: View highscores
 			}
 		});
         
@@ -520,7 +749,7 @@ public class MainFragment extends FragmentActivity {
         _btn_settings.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
-				
+				//TODO: Application settings
 			}
 		});
 	}

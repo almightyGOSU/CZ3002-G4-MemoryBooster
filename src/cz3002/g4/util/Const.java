@@ -49,4 +49,18 @@ public class Const {
 	public static final String TC_SCORE = "TIMED CHALLENGE SCORE";
 	public static final String CM_STARS = "CAMPAIGN MODE STARS";
 	public static final String TC_NEW_HIGHSCORE = "TIMED CHALLENGE NEW HIGHSCORE";
+	
+	/** Fixed url for getting the 'general' question bank */
+	public static final String GEN_DATA_URL = 
+			"http://52.76.1.45:8080/cz3002/rest/api/getDataset/count=300";
+	
+	/** Minimum number of facebook friends required to play in 'Social' mode */
+	public static final int MIN_FB_FRIENDS = 10;
+	/** NOTE:
+	 *  MIN_FB_FRIENDS should be 25 (Maximum required for any game mode!)
+	 *  Changed to 10 just for demonstration
+	 */
+	
+	/** For storing number of facebook friends the current user has */
+	public static final String NUM_FB_FRIENDS = "NUMBER OF FB FRIENDS";
 }

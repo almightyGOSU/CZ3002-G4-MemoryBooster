@@ -21,14 +21,14 @@
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_weight="0.25"
-            android:gravity="bottom"
+            android:gravity="center"
             android:orientation="vertical" >
             
 	        <TextView
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_gravity="center"
-	            android:textSize="40sp"
+	            android:textSize="48sp"
 	            android:textStyle="bold|italic"
 	            android:text="@string/select_game_mode" />
 	        
@@ -44,40 +44,40 @@
 	        
 	        <Button
 		        android:id="@+id/btn_timedChallengeMode"
-		        android:layout_width="400dp"
-		        android:layout_height="100dp"
+		        android:layout_width="480dp"
+		        android:layout_height="120dp"
 		        android:layout_gravity="center"
 		        android:padding="10dp"
 		        android:layout_margin="15dp"
 		        android:background="@drawable/btn_post_game"
 		        android:text="@string/timed_challenge"
-		        android:textSize="32sp"
+		        android:textSize="40sp"
 		        android:textStyle="bold|italic"
 		        android:textAllCaps="false" />
 	        
 		    <Button
 		        android:id="@+id/btn_campaignMode"
-		        android:layout_width="400dp"
-		        android:layout_height="100dp"
+		        android:layout_width="480dp"
+		        android:layout_height="120dp"
 		        android:layout_gravity="center"
 		        android:padding="10dp"
 		        android:layout_margin="15dp"
 		        android:background="@drawable/btn_post_game"
 		        android:text="@string/campaign_mode"
-		        android:textSize="32sp"
+		        android:textSize="40sp"
 		        android:textStyle="bold|italic"
 		        android:textAllCaps="false" />
 		    
 		    <Button
 		        android:id="@+id/btn_ffMode"
-		        android:layout_width="400dp"
-		        android:layout_height="100dp"
+		        android:layout_width="480dp"
+		        android:layout_height="120dp"
 		        android:layout_gravity="center"
 		        android:padding="10dp"
 		        android:layout_margin="15dp"
 		        android:background="@drawable/btn_post_game"
 		        android:text="@string/ff_mode"
-		        android:textSize="32sp"
+		        android:textSize="40sp"
 		        android:textStyle="bold|italic"
 		        android:textAllCaps="false" />
 		    
@@ -184,7 +184,7 @@
 		        android:layout_margin="15dp"
 		        android:background="@drawable/btn_post_game"
 		        android:text="@string/start_game"
-		        android:textSize="32sp"
+		        android:textSize="36sp"
 		        android:textStyle="bold|italic"
 		        android:textAllCaps="false" />
 		    
@@ -528,7 +528,7 @@
 		        android:layout_margin="15dp"
 		        android:background="@drawable/btn_post_game"
 		        android:text="@string/start_game"
-		        android:textSize="32sp"
+		        android:textSize="36sp"
 		        android:textStyle="bold|italic"
 		        android:textAllCaps="false" />
 		    

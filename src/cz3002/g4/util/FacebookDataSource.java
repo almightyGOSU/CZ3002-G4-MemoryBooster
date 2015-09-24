@@ -14,13 +14,6 @@ public class FacebookDataSource {
 	// Database fields
 	private SQLiteDatabase _database = null;
 	private AlmightySQLiteHelper _dbHelper = null;
-	
-	@SuppressWarnings("unused")
-	private static final String[] ALL_FB_COLUMNS = {
-			AlmightySQLiteHelper.FB_COLUMN_ID,
-			AlmightySQLiteHelper.FB_COLUMN_PROF_ID,
-			AlmightySQLiteHelper.FB_COLUMN_PROF_NAME,
-			AlmightySQLiteHelper.FB_COLUMN_PROF_PIC};
 
 	public FacebookDataSource(Context context) {
 		
