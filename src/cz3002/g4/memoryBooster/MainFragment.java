@@ -746,7 +746,7 @@ public class MainFragment extends FragmentActivity {
 			            
 			            Toast.makeText(getApplicationContext(),
 			            		"Not enough Facebook friends!\n"
-			            		+ "Playing using 'general' dataset..",
+			            		+ "Playing using 'General' dataset..",
 			            		Toast.LENGTH_LONG).show();
 			            Log.d("PlayGameBtn", "Not enough FB friends");
 					}

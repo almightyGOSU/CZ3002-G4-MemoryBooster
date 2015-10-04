@@ -59,7 +59,7 @@ public class Const {
 			"http://52.76.1.45:8080/cz3002/rest/api/getHighscore";
 	
 	/** Minimum number of facebook friends required to play in 'Social' mode */
-	public static final int MIN_FB_FRIENDS = 10;
+	public static final int MIN_FB_FRIENDS = 15;
 	/** NOTE:
 	 *  MIN_FB_FRIENDS should be 25 (Maximum required for any game mode!)
 	 *  Changed to 10 just for demonstration
