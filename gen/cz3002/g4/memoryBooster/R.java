@@ -261,10 +261,13 @@ containing a value of this type.
         public static final int stickman=0x7f020041;
         public static final int tc_new_highscore=0x7f020042;
         public static final int tc_try_harder=0x7f020043;
-        public static final int tutorial_image1=0x7f020044;
-        public static final int tutorial_image2=0x7f020045;
-        public static final int tutorial_image3=0x7f020046;
-        public static final int tutorial_image4=0x7f020047;
+        public static final int timage_1=0x7f020044;
+        public static final int timage_2=0x7f020045;
+        public static final int timage_3=0x7f020046;
+        public static final int timage_4=0x7f020047;
+        public static final int timage_5=0x7f020048;
+        public static final int timage_6=0x7f020049;
+        public static final int timage_7=0x7f02004a;
     }
     public static final class id {
         public static final int automatic=0x7f040000;

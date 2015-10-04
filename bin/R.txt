@@ -127,10 +127,13 @@ int drawable stars3large 0x7f020040
 int drawable stickman 0x7f020041
 int drawable tc_new_highscore 0x7f020042
 int drawable tc_try_harder 0x7f020043
-int drawable tutorial_image1 0x7f020044
-int drawable tutorial_image2 0x7f020045
-int drawable tutorial_image3 0x7f020046
-int drawable tutorial_image4 0x7f020047
+int drawable timage_1 0x7f020044
+int drawable timage_2 0x7f020045
+int drawable timage_3 0x7f020046
+int drawable timage_4 0x7f020047
+int drawable timage_5 0x7f020048
+int drawable timage_6 0x7f020049
+int drawable timage_7 0x7f02004a
 int id automatic 0x7f040000
 int id bottom 0x7f04000c
 int id box_count 0x7f04000b

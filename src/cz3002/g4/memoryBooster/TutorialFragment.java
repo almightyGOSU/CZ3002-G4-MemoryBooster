@@ -22,9 +22,10 @@ public class TutorialFragment extends FragmentActivity {
 	private Button _btn_tut_backToMain = null;
 
 	// For switching between images
-    private Integer [] _images = {R.drawable.tutorial_image1,
-    		R.drawable.tutorial_image2, R.drawable.tutorial_image3,
-    		R.drawable.tutorial_image4};
+    private Integer [] _images = {R.drawable.timage_1,
+    		R.drawable.timage_2, R.drawable.timage_3,
+    		R.drawable.timage_4, R.drawable.timage_5,
+    		R.drawable.timage_6, R.drawable.timage_7};
     private int _numImages = _images.length;
     private int _currImage = 0;
 
