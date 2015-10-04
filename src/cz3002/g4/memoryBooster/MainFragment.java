@@ -766,7 +766,9 @@ public class MainFragment extends FragmentActivity {
         _btn_viewHighscores.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				
-				//TODO: View highscores
+				Intent highscoreIntent = new Intent(
+						getApplicationContext(), HighscoreFragment.class);
+	        	startActivity(highscoreIntent);
 			}
 		});
         
@@ -775,6 +777,9 @@ public class MainFragment extends FragmentActivity {
 			public void onClick(View view) {
 
 				//TODO: Application settings
+				Toast.makeText(getApplicationContext(),
+						"'Application settings' is not yet available!",
+						Toast.LENGTH_LONG).show();
 			}
 		});
 	}

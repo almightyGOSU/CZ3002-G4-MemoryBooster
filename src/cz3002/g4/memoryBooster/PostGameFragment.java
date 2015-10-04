@@ -1,16 +1,24 @@
 package cz3002.g4.memoryBooster;
 
+import java.io.OutputStream;
+import java.text.DecimalFormat;
+
 import cz3002.g4.util.Const;
 import cz3002.g4.util.Const.GameMode;
 import cz3002.g4.util.TimeUtil;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.Media;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -143,9 +151,7 @@ public class PostGameFragment extends FragmentActivity {
 		_btn_socialShare.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 
-				//TODO: Add sharing to social media
-				Toast.makeText(getApplicationContext(), "Share to Social Media",
-						Toast.LENGTH_SHORT).show();
+				createShareIntent();
 			}
 		});
 		
@@ -421,5 +427,53 @@ public class PostGameFragment extends FragmentActivity {
 		animatorSet.play(btnSocialFadeAnim).with(btnMainFadeAnim);
 		
 		animatorSet.start();
+	}
+	
+	private void createShareIntent() {
+		
+		Bitmap icon = BitmapFactory.decodeResource(
+				getResources(), R.drawable.mind_games_social_media);
+		Intent share = new Intent(Intent.ACTION_SEND);
+		share.setType("image/jpeg");
+
+		ContentValues values = new ContentValues();
+		values.put(Images.Media.TITLE, "title");
+		values.put(Images.Media.MIME_TYPE, "image/jpeg");
+		
+		Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI,
+				values);
+		
+		OutputStream outstream;
+		try {
+			outstream = getContentResolver().openOutputStream(uri);
+			icon.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+			outstream.close();
+		} catch (Exception e) {
+			System.err.println(e.toString());
+		}
+		
+		String message = null;
+		if(_gameMode == Const.GameMode.TIMED_CHALLENGE) {
+			
+			message = "I just got a " +
+					(_bNewHighscore ? "new highscore" : "highscore")
+					+ " of '" + _score + "' in the Timed Challenge!\n";
+			message += "Try to beat my highscore in Memory Booster!";
+		}
+		else if(_gameMode == Const.GameMode.CAMPAIGN_MODE) {
+			
+			message = "I just got " + _levelStars + " stars for Campaign Mode"
+					+ ", Level " + _gameLevel + "!\n";
+			message += "Think you can do better? Try Memory Booster today!";
+		}
+		else
+		{
+			message = "Try Memory Booster today!!";
+		}
+		
+		share.putExtra(Intent.EXTRA_STREAM, uri);
+		share.putExtra(Intent.EXTRA_TEXT, message);
+		
+		startActivity(Intent.createChooser(share, "Share Game Results"));
 	}
 }

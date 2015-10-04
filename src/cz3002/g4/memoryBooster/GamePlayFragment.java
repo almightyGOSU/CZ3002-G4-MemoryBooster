@@ -389,7 +389,6 @@ public class GamePlayFragment extends FragmentActivity {
 		return 0;
 	}
 	
-	@SuppressLint("InflateParams")
 	private void updateGlobalHighscore(int score) {
 		
 		// Update global highscore
@@ -400,7 +399,7 @@ public class GamePlayFragment extends FragmentActivity {
 			highscoreUrl += ("name=" + _userProfileName + "&");
 		}
 		else {
-			highscoreUrl += ("name=" + "GUEST" + "&");
+			highscoreUrl += ("name=" + "Guest" + "&");
 		}
 		
 		highscoreUrl += ("score=" + score + "&");

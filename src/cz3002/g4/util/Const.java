@@ -54,6 +54,10 @@ public class Const {
 	public static final String GEN_DATA_URL = 
 			"http://52.76.1.45:8080/cz3002/rest/api/getDataset/count=300";
 	
+	/** Fixed url for getting the global highscores */
+	public static final String HIGHSCORES_URL = 
+			"http://52.76.1.45:8080/cz3002/rest/api/getHighscore";
+	
 	/** Minimum number of facebook friends required to play in 'Social' mode */
 	public static final int MIN_FB_FRIENDS = 10;
 	/** NOTE:

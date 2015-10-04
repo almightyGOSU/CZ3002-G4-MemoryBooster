@@ -76,4 +76,11 @@
     <string name="back_to_main">Return to Main Menu</string>
     <!-- Post Game strings -->
     
+    <!-- Highscore strings -->
+    <string name="global_highscores">Global Highscores</string>
+    <string name="highscore_social">Social</string>
+    <string name="highscore_general">General</string>
+    <string name="highscore_999">999</string>
+    <!-- Highscore strings -->
+    
 </resources>

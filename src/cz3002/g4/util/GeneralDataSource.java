@@ -74,6 +74,8 @@ public class GeneralDataSource {
 		
 		Bitmap bm = null;
 		
+		answer = answer.replaceAll("'", "''");
+		
 		Cursor cursor = _database.query(
 				AlmightySQLiteHelper.GEN_TABLE_NAME,
 				new String[] {AlmightySQLiteHelper.GEN_COLUMN_IMAGE},
@@ -137,6 +139,8 @@ public class GeneralDataSource {
 			String categoryTag, int count) {
 		
 		ArrayList<String> profileNameOptionsList = new ArrayList<String>();
+		
+		answer = answer.replaceAll("'", "''");
 		
 		String rawQueryStr = "SELECT " + AlmightySQLiteHelper.GEN_COLUMN_ANSWER
 				+ " FROM " + AlmightySQLiteHelper.GEN_TABLE_NAME
