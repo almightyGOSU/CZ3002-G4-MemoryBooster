@@ -742,7 +742,7 @@ public class MainFragment extends FragmentActivity {
 					if(numFbFriends < Const.MIN_FB_FRIENDS) {
 						
 						_userStatus = UserStatus.GUEST;
-			            _userProfileName = null;
+			            //_userProfileName = null;
 			            
 			            Toast.makeText(getApplicationContext(),
 			            		"Not enough Facebook friends!\n"
